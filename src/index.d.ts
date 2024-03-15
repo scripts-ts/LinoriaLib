@@ -10,7 +10,7 @@ declare global {
 	}
 
 	type SpecialType = "Player" | "Team";
-	type KeypickerMode = "Always" | "Toggle" | "Hold";
+	type KeyPickerMode = "Always" | "Toggle" | "Hold";
 
 	interface Window {
 		Tabs: {
@@ -88,8 +88,9 @@ declare global {
 	}
 
 	interface KeyPicker {
-		Value: { Key: string; Mode: string };
-		SetValue(value: { Key: string; Mode: string }): void;
+		Value: string;
+		Mode: KeyPickerMode;
+		SetValue(value: [string, KeyPickerMode]): void;
 		OnClick(callback: () => void): void;
 		OnChanged(callback: () => void): void;
 		GetState(): boolean;
@@ -139,7 +140,7 @@ export interface ColorPickerOptions {
 export interface KeyPickerOptions {
 	Default?: string;
 	SyncToggleState?: boolean;
-	Mode?: KeypickerMode;
+	Mode?: KeyPickerMode;
 	Text?: string;
 	NoUI?: boolean;
 	Callback?: (value: boolean) => void;
