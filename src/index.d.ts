@@ -3,11 +3,14 @@ declare global {
 	const Options: Options;
 
 	interface Options {
-		[key: string]: Slider | Input | Dropdown | MultiDropdown | ColorPicker | KeyPicker;
+		[key: string]: Slider | Input | Dropdown<string, false> | Dropdown<string, true> | ColorPicker | KeyPicker;
 	}
 	interface Toggles {
 		[key: string]: Toggle;
 	}
+
+	type SpecialType = "Player" | "Team";
+	type KeypickerMode = "Always" | "Toggle" | "Hold";
 
 	interface Window {
 		Tabs: {
@@ -30,7 +33,7 @@ declare global {
 		AddDivider(): void;
 		AddSlider(idx: string, options: SliderOptions): void;
 		AddInput(idx: string, options: InputOptions): void;
-		AddDropdown<V extends string[]>(idx: string, options: DropdownOptions<V> | MultiDropdownOptions<V>): void;
+		AddDropdown<V extends string, M extends boolean = false>(idx: string, options: DropdownOptions<V, M>): void;
 		AddColorPicker(idx: string, options: ColorPickerOptions): void;
 		AddKeyPicker(idx: string, options: KeyPickerOptions): void;
 		AddDependencyBox(): DependencyBox;
@@ -71,16 +74,10 @@ declare global {
 		OnChanged(callback: (value: string) => void): void;
 	}
 
-	interface Dropdown<V extends string[] = string[]> {
-		Value: V[number];
-		SetValue(value: V[number]): void;
-		OnChanged(callback: (value: V[number]) => void): void;
-	}
-
-	interface MultiDropdown<V extends string[] = string[]> {
-		Value: Set<V[number]>;
-		SetValue(value: Set<V[number]>): void;
-		OnChanged(callback: (value: Set<V[number]>) => void): void;
+	interface Dropdown<V extends string, M extends boolean> {
+		Value: M extends true ? Set<V> : V;
+		SetValue(value: M extends true ? Set<V> : V): void;
+		OnChanged(callback: (value: M extends true ? Set<V> : V) => void): void;
 	}
 
 	interface ColorPicker {
@@ -122,24 +119,14 @@ export interface InputOptions {
 	Callback?: (value: string) => void;
 }
 
-export interface MultiDropdownOptions<V extends string[] = string[]> {
-	Values?: V;
+export interface DropdownOptions<V extends string, M extends boolean = false> {
+	Values?: V[];
 	Default?: number | V;
-	Multi: true;
+	Multi?: M;
 	Text?: string;
 	Tooltip?: string;
-	Callback?: (values: Set<V[number]>) => void;
-	SpecialType?: "Player";
-}
-
-export interface DropdownOptions<V extends string[] = string[]> {
-	Values?: V;
-	Default?: number | V;
-	Multi?: false;
-	Text?: string;
-	Tooltip?: string;
-	Callback?: (value: V[number]) => void;
-	SpecialType?: "Player";
+	Callback?: (value: M extends true ? Set<V> : V) => void;
+	SpecialType?: SpecialType;
 }
 
 export interface ColorPickerOptions {
@@ -152,7 +139,7 @@ export interface ColorPickerOptions {
 export interface KeyPickerOptions {
 	Default?: string;
 	SyncToggleState?: boolean;
-	Mode?: "Always" | "Toggle" | "Hold";
+	Mode?: KeypickerMode;
 	Text?: string;
 	NoUI?: boolean;
 	Callback?: (value: boolean) => void;
