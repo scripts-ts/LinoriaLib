@@ -1,8 +1,10 @@
 declare global {
+	const Toggles: Toggles;
+	const Options: Options;
+
 	interface Options {
 		[key: string]: Slider | Input | Dropdown | MultiDropdown | ColorPicker | KeyPicker;
 	}
-
 	interface Toggles {
 		[key: string]: Toggle;
 	}
@@ -28,7 +30,7 @@ declare global {
 		AddDivider(): void;
 		AddSlider(idx: string, options: SliderOptions): void;
 		AddInput(idx: string, options: InputOptions): void;
-		AddDropdown(idx: string, options: DropdownOptions | MultiDropdownOptions): void;
+		AddDropdown<V extends string[]>(idx: string, options: DropdownOptions<V> | MultiDropdownOptions<V>): void;
 		AddColorPicker(idx: string, options: ColorPickerOptions): void;
 		AddKeyPicker(idx: string, options: KeyPickerOptions): void;
 		AddDependencyBox(): DependencyBox;
@@ -205,6 +207,3 @@ export interface SaveManager {
 	BuildConfigSection(tab: Tab): void;
 	LoadAutoloadConfig(): void;
 }
-
-declare let Toggles: Toggles;
-declare let Options: Options;

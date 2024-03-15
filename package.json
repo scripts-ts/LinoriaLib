@@ -1,12 +1,11 @@
 {
   "name": "@script-ts/linorialib",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "",
   "main": "src/init.lua",
   "scripts": {
     "build": "rbxtsc",
-    "watch": "rbxtsc -w",
-    "prepublishOnly": "npm run build"
+    "watch": "rbxtsc -w"
   },
   "keywords": [],
   "author": "",
