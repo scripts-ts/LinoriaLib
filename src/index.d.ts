@@ -171,7 +171,7 @@ export interface ToggleOptions {
 	Text?: string;
 	Default?: boolean;
 	Tooltip?: string;
-	Callback?(value: boolean): void;
+	Callback?: (value: boolean) => void;
 }
 
 export interface ButtonOptions {
