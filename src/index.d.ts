@@ -1,6 +1,6 @@
 declare global {
 	interface Options {
-		[key: string]: Slider | Input | Dropdown | ColorPicker | KeyPicker;
+		[key: string]: Slider | Input | Dropdown | MultiDropdown | ColorPicker | KeyPicker;
 	}
 
 	interface Toggles {
@@ -28,7 +28,7 @@ declare global {
 		AddDivider(): void;
 		AddSlider(idx: string, options: SliderOptions): void;
 		AddInput(idx: string, options: InputOptions): void;
-		AddDropdown(idx: string, options: DropdownOptions): void;
+		AddDropdown(idx: string, options: DropdownOptions | MultiDropdownOptions): void;
 		AddColorPicker(idx: string, options: ColorPickerOptions): void;
 		AddKeyPicker(idx: string, options: KeyPickerOptions): void;
 		AddDependencyBox(): DependencyBox;
@@ -41,56 +41,6 @@ declare global {
 	interface Label {
 		AddColorPicker(idx: string, options: ColorPickerOptions): void;
 		AddKeyPicker(idx: string, options: KeyPickerOptions): void;
-	}
-
-	interface SliderOptions {
-		Text: string;
-		Default: number;
-		Min: number;
-		Max: number;
-		Suffix?: string;
-		Rounding: number;
-		Compact?: boolean;
-		HideMax?: boolean;
-		Callback?(value: number): void;
-	}
-
-	interface InputOptions {
-		Default?: string;
-		Numeric?: boolean;
-		Finished?: boolean;
-		Text?: string;
-		Tooltip?: string;
-		Placeholder?: string;
-		MaxLength?: number;
-		Callback?(value: string): void;
-	}
-
-	interface DropdownOptions {
-		Values?: string[];
-		Default?: number | string;
-		Multi?: boolean;
-		Text?: string;
-		Tooltip?: string;
-		Callback?(value: string | { [key: string]: boolean }): void;
-		SpecialType?: "Player";
-	}
-
-	interface ColorPickerOptions {
-		Default?: Color3;
-		Title?: string;
-		Transparency?: number;
-		Callback?(value: Color3): void;
-	}
-
-	interface KeyPickerOptions {
-		Default?: string;
-		SyncToggleState?: boolean;
-		Mode?: "Always" | "Toggle" | "Hold";
-		Text?: string;
-		NoUI?: boolean;
-		Callback?(value: boolean): void;
-		ChangedCallback?(value: Enum.KeyCode | Enum.UserInputType): void;
 	}
 
 	interface Tabbox {
@@ -119,10 +69,16 @@ declare global {
 		OnChanged(callback: (value: string) => void): void;
 	}
 
-	interface Dropdown {
-		Value: string | { [key: string]: boolean };
-		SetValue(value: string | { [key: string]: boolean }): void;
-		OnChanged(callback: (value: string | { [key: string]: boolean }) => void): void;
+	interface Dropdown<V extends string[] = string[]> {
+		Value: V[number];
+		SetValue(value: V[number]): void;
+		OnChanged(callback: (value: V[number]) => void): void;
+	}
+
+	interface MultiDropdown<V extends string[] = string[]> {
+		Value: Set<V[number]>;
+		SetValue(value: Set<V[number]>): void;
+		OnChanged(callback: (value: Set<V[number]>) => void): void;
 	}
 
 	interface ColorPicker {
@@ -139,6 +95,66 @@ declare global {
 		OnChanged(callback: () => void): void;
 		GetState(): boolean;
 	}
+}
+
+export interface SliderOptions {
+	Text: string;
+	Default: number;
+	Min: number;
+	Max: number;
+	Suffix?: string;
+	Rounding: number;
+	Compact?: boolean;
+	HideMax?: boolean;
+	Callback?: (value: number) => void;
+}
+
+export interface InputOptions {
+	Default?: string;
+	Numeric?: boolean;
+	Finished?: boolean;
+	Text?: string;
+	Tooltip?: string;
+	Placeholder?: string;
+	MaxLength?: number;
+	Callback?: (value: string) => void;
+}
+
+export interface MultiDropdownOptions<V extends string[] = string[]> {
+	Values?: V;
+	Default?: number | V;
+	Multi: true;
+	Text?: string;
+	Tooltip?: string;
+	Callback?: (values: Set<V[number]>) => void;
+	SpecialType?: "Player";
+}
+
+export interface DropdownOptions<V extends string[] = string[]> {
+	Values?: V;
+	Default?: number | V;
+	Multi?: false;
+	Text?: string;
+	Tooltip?: string;
+	Callback?: (value: V[number]) => void;
+	SpecialType?: "Player";
+}
+
+export interface ColorPickerOptions {
+	Default?: Color3;
+	Title?: string;
+	Transparency?: number;
+	Callback?: (value: Color3) => void;
+}
+
+export interface KeyPickerOptions {
+	Default?: string;
+	SyncToggleState?: boolean;
+	Mode?: "Always" | "Toggle" | "Hold";
+	Text?: string;
+	NoUI?: boolean;
+	Callback?: (value: boolean) => void;
+	ChangedCallback?: (value: Enum.KeyCode | Enum.UserInputType) => void;
 }
 
 export interface WindowOptions {
