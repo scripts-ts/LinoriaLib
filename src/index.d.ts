@@ -173,8 +173,9 @@ export interface Library {
 	Unloaded: boolean;
 	ToggleKeybind: KeyPicker;
 	KeybindFrame: Frame;
-	SetWatermarkVisibility(visible: boolean): void;
+	Notify(text: string, duration?: number): void;
 	SetWatermark(text: string): void;
+	SetWatermarkVisibility(visible: boolean): void;
 	OnUnload(callback: () => void): void;
 	Unload(): void;
 	CreateWindow(options: WindowOptions): Window;
