@@ -1,13 +1,8 @@
 declare global {
+	interface Options {}
+	interface Toggles {}
 	const Toggles: Toggles;
 	const Options: Options;
-
-	interface Options {
-		[key: string]: Slider | Input | Dropdown<string, false> | Dropdown<string, true> | ColorPicker | KeyPicker;
-	}
-	interface Toggles {
-		[key: string]: Toggle;
-	}
 
 	type SpecialType = "Player" | "Team";
 	type KeyPickerMode = "Always" | "Toggle" | "Hold";
@@ -27,15 +22,18 @@ declare global {
 	}
 
 	interface Groupbox {
-		AddToggle(idx: string, options: ToggleOptions): void;
+		AddToggle(idx: keyof Toggles, options: ToggleOptions): void;
 		AddButton(options: ButtonOptions): Button;
 		AddLabel(text: string, doesWrap?: boolean): Label;
 		AddDivider(): void;
-		AddSlider(idx: string, options: SliderOptions): void;
-		AddInput(idx: string, options: InputOptions): void;
-		AddDropdown<V extends string, M extends boolean = false>(idx: string, options: DropdownOptions<V, M>): void;
-		AddColorPicker(idx: string, options: ColorPickerOptions): void;
-		AddKeyPicker(idx: string, options: KeyPickerOptions): void;
+		AddSlider(idx: keyof Options, options: SliderOptions): void;
+		AddInput(idx: keyof Options, options: InputOptions): void;
+		AddDropdown<V extends string, M extends boolean = false>(
+			idx: keyof Options,
+			options: DropdownOptions<V, M>,
+		): void;
+		AddColorPicker(idx: keyof Options, options: ColorPickerOptions): void;
+		AddKeyPicker(idx: keyof Options, options: KeyPickerOptions): void;
 		AddDependencyBox(): DependencyBox;
 	}
 
@@ -44,8 +42,8 @@ declare global {
 	}
 
 	interface Label {
-		AddColorPicker(idx: string, options: ColorPickerOptions): void;
-		AddKeyPicker(idx: string, options: KeyPickerOptions): void;
+		AddColorPicker(idx: keyof Options, options: ColorPickerOptions): void;
+		AddKeyPicker(idx: keyof Options, options: KeyPickerOptions): void;
 	}
 
 	interface Tabbox {
