@@ -1,3 +1,4 @@
+/// <reference types="@rbxts/compiler-types" />
 /// <reference types="@rbxts/types" />
 /// <reference types="@rbxts/types" />
 /// <reference types="@rbxts/compiler-types" />
@@ -10,6 +11,7 @@ export declare enum Side {
     Left = 0,
     Right = 1
 }
+export declare function load(): LuaTuple<[Library, SaveManager, ThemeManager]>;
 /************************************************************
  * EXTENSIONS
  * Description: Builder classes for element extensions
