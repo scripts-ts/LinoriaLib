@@ -426,7 +426,7 @@ declare abstract class Box {
     /**
      * Adds elements to the section.
      */
-    elements(elements: Element[]): this;
+    elements(elements: (Element | DependencyBox)[]): this;
 }
 /**
  * Represents a box section.

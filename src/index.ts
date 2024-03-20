@@ -763,7 +763,7 @@ abstract class Box {
 	/**
 	 * Adds elements to the section.
 	 */
-	public elements(elements: Element[]) {
+	public elements(elements: (Element | DependencyBox)[]) {
 		for (const element of elements) this.children.push(element);
 		return this;
 	}
