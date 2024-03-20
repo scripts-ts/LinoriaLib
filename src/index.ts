@@ -765,8 +765,7 @@ abstract class Box {
  * Represents a box section.
  */
 export class DependencyBox extends Box {
-	private dependent: string = "";
-	private state: boolean = true;
+	private dependencies: [string, boolean][] = [];
 
 	/**
 	 * Builds the dependency box on the specified parent element.
@@ -775,7 +774,11 @@ export class DependencyBox extends Box {
 	public build(builder: Builder, parent: Elements.Box): DependencyBox {
 		const box = parent.AddDependencyBox();
 		for (const child of this.children) child.build(builder, box);
-		builder.onAppear.set(this, () => box.SetupDependencies([Toggles[this.dependent], this.state]));
+		builder.onAppear.set(this, () =>
+			box.SetupDependencies(
+				this.dependencies.map(([idx, state]) => [Toggles[idx], state] as [Elements.Toggle, boolean]),
+			),
+		);
 		return this;
 	}
 
@@ -784,8 +787,7 @@ export class DependencyBox extends Box {
 	 * The box will only be visible if the specified Toggle is in the specified state.
 	 */
 	public dependsOn(idx: string, state: boolean) {
-		this.dependent = idx;
-		this.state = state;
+		this.dependencies.push([idx, state]);
 		return this;
 	}
 }

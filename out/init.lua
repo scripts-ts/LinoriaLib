@@ -703,8 +703,7 @@ do
 	end
 	function DependencyBox:constructor(...)
 		super.constructor(self, ...)
-		self.dependent = ""
-		self.state = true
+		self.dependencies = {}
 	end
 	function DependencyBox:build(builder, parent)
 		local box = parent:AddDependencyBox()
@@ -714,13 +713,27 @@ do
 		local _onAppear = builder.onAppear
 		local _self = self
 		_onAppear[_self] = function()
-			return box:SetupDependencies({ Toggles[self.dependent], self.state })
+			local _fn = box
+			local _exp = self.dependencies
+			-- ▼ ReadonlyArray.map ▼
+			local _newValue = table.create(#_exp)
+			local _callback = function(_param)
+				local idx = _param[1]
+				local state = _param[2]
+				return { Toggles[idx], state }
+			end
+			for _k, _v in _exp do
+				_newValue[_k] = _callback(_v, _k - 1, _exp)
+			end
+			-- ▲ ReadonlyArray.map ▲
+			return _fn:SetupDependencies(_newValue)
 		end
 		return self
 	end
 	function DependencyBox:dependsOn(idx, state)
-		self.dependent = idx
-		self.state = state
+		local _dependencies = self.dependencies
+		local _arg0 = { idx, state }
+		table.insert(_dependencies, _arg0)
 		return self
 	end
 end

@@ -32,7 +32,7 @@ export namespace Elements {
 	}
 
 	interface DependencyBox extends Box {
-		SetupDependencies(dependencies: [Toggle, boolean]): void;
+		SetupDependencies(dependencies: [Toggle, boolean][]): void;
 	}
 
 	interface Groupbox extends Box {}

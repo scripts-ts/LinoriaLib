@@ -430,8 +430,7 @@ declare abstract class Box {
  * Represents a box section.
  */
 export declare class DependencyBox extends Box {
-    private dependent;
-    private state;
+    private dependencies;
     /**
      * Builds the dependency box on the specified parent element.
      * @hidden
