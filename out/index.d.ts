@@ -131,26 +131,21 @@ declare abstract class Element {
     index(idx: string): this;
 }
 /**
- * Abstract base class for elements with extensions.
- */
-declare abstract class BaseExtensions extends Element {
-    protected addons: Extension[];
-    /**
-     * Adds extensions to the element.
-     */
-    extensions(extensions: Extension[]): this;
-}
-/**
  * Represents a label element.
  */
-export declare class Label extends BaseExtensions {
+export declare class Label {
     protected _text: string;
     protected _doesWrap: boolean;
+    protected addons: Extension[];
     /**
      * Builds the label element on the specified parent element.
      * @hidden
      */
     build(builder: Builder, parent: Elements.Box): Label;
+    /**
+     * Adds extensions to the label.
+     */
+    extensions(extensions: Extension[]): this;
     /**
      * Sets the text of the label.
      */
@@ -164,16 +159,21 @@ export declare class Label extends BaseExtensions {
 /**
  * Represents a toggle element.
  */
-export declare class Toggle extends BaseExtensions {
+export declare class Toggle extends Element {
     protected _title: string;
     protected _tooltip: string;
     protected _default: boolean;
     protected _callback: (value: boolean) => void;
+    protected addons: Extension[];
     /**
      * Builds the toggle element on the specified parent element.
      * @hidden
      */
     build(builder: Builder, parent: Elements.Box): Toggle;
+    /**
+     * Adds extensions to the Toggle.
+     */
+    extensions(extensions: Extension[]): this;
     /**
      * Sets the title of the toggle.
      */
@@ -412,6 +412,16 @@ export declare class MultiDropdown<V extends string> extends Element {
      */
     onChange(callback: (value: Set<V>) => void): MultiDropdown<V>;
 }
+/**
+ * Represents a divider element.
+ */
+export declare class Divider {
+    /**
+     * Builds the Divider on the specified parent element.
+     * @hidden
+     */
+    build(builder: Builder, parent: Elements.Box): Divider;
+}
 /************************************************************
  * SECTIONS
  * Description: Builder classes that hold elements
@@ -420,11 +430,11 @@ export declare class MultiDropdown<V extends string> extends Element {
  * Abstract base class for sections.
  */
 declare abstract class Box {
-    protected children: (Element | DependencyBox)[];
+    protected children: (Label | Divider | Element | DependencyBox)[];
     /**
      * Adds elements to the section.
      */
-    elements(elements: (Element | DependencyBox)[]): this;
+    elements(elements: (Element | Divider | DependencyBox)[]): this;
 }
 /**
  * Represents a box section.
@@ -488,6 +498,30 @@ export declare class Tabbox {
      */
     tabs(tabs: Tab[]): Tabbox;
 }
+/**
+ * Represents the SaveManager section.
+ */
+export declare class ConfigSection {
+    protected readonly _type = "ConfigSection";
+    protected _ignore: string[];
+    /**
+     * Builds the SaveManager on the specified parent element.
+     * @hidden
+     */
+    build(builder: Builder, parent: Elements.Tab, side: Side): ConfigSection;
+    ignore(indices: string[]): this;
+}
+/**
+ * Represents the ThemeManager section.
+ */
+export declare class ThemeSection {
+    protected readonly _type = "ThemeSection";
+    /**
+     * Builds the ThemeManager on the specified parent element.
+     * @hidden
+     */
+    build(builder: Builder, parent: Elements.Tab, side: Side): ThemeSection;
+}
 /************************************************************
  * INTERFACE
  * Description: Builder classes to construct the UI
@@ -497,8 +531,8 @@ export declare class Tabbox {
  */
 export declare class Page {
     protected name: string;
-    protected left_children: (Groupbox | Tabbox)[];
-    protected right_children: (Groupbox | Tabbox)[];
+    protected left_children: (Groupbox | Tabbox | ThemeSection)[];
+    protected right_children: (Groupbox | Tabbox | ConfigSection)[];
     /**
      * Builds the page on the specified parent element.
      * @hidden
@@ -507,11 +541,19 @@ export declare class Page {
     /**
      * Adds sections to the left side of the page.
      */
-    left(left: (Groupbox | Tabbox)[]): Page;
+    left(left: (Groupbox | Tabbox | ThemeSection)[]): Page;
     /**
      * Adds sections to the right side of the page.
      */
-    right(right: (Groupbox | Tabbox)[]): Page;
+    right(right: (Groupbox | Tabbox | ConfigSection)[]): Page;
+    /**
+     * Applies the save manager to the page.
+     */
+    applySaveManager(): Page;
+    /**
+     * Applies the theme manager to the page.
+     */
+    applyThemeManager(): Page;
     /**
      * Sets the name of the page.
      */
@@ -558,13 +600,15 @@ export declare class Window {
  */
 export declare class Builder {
     /** @hidden */
-    library: Library;
+    _library?: Library;
     /** @hidden */
-    saveManager: SaveManager;
+    _saveManager?: SaveManager;
     /** @hidden */
-    themeManager: ThemeManager;
+    _themeManager?: ThemeManager;
     /** @hidden */
-    onAppear: Map<unknown, () => void>;
+    _onAppear: Map<unknown, () => void>;
+    protected _root: string;
+    protected _name: string;
     protected children: Window[];
     /**
      * Creates the UI.
@@ -577,8 +621,18 @@ export declare class Builder {
     /**
      * Sets the library to use for UI creation.
      */
-    setLibrary(library: Library): Builder;
-    setSaveManager(saveManager: SaveManager): Builder;
-    setThemeManager(themeManager: ThemeManager): Builder;
+    library(library: Library): Builder;
+    /**
+     * Sets the save manager
+     */
+    withSaveManager(saveManager: SaveManager): Builder;
+    /**
+     * Sets the theme manager
+     */
+    withThemeManager(themeManager: ThemeManager): Builder;
+    /**
+     * Sets the configuration root and path
+     */
+    root(root: string, name: string): Builder;
 }
 export {};

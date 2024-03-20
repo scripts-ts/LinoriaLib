@@ -177,59 +177,37 @@ do
 end
 --[[
 	*
-	 * Abstract base class for elements with extensions.
-	 
-]]
-local BaseExtensions
-do
-	local super = Element
-	BaseExtensions = setmetatable({}, {
-		__tostring = function()
-			return "BaseExtensions"
-		end,
-		__index = super,
-	})
-	BaseExtensions.__index = BaseExtensions
-	function BaseExtensions:constructor(...)
-		super.constructor(self, ...)
-		self.addons = {}
-	end
-	function BaseExtensions:extensions(extensions)
-		for _, extension in extensions do
-			local _exp = self.addons
-			table.insert(_exp, extension)
-		end
-		return self
-	end
-end
---[[
-	*
 	 * Represents a label element.
 	 
 ]]
 local Label
 do
-	local super = BaseExtensions
 	Label = setmetatable({}, {
 		__tostring = function()
 			return "Label"
 		end,
-		__index = super,
 	})
 	Label.__index = Label
 	function Label.new(...)
 		local self = setmetatable({}, Label)
 		return self:constructor(...) or self
 	end
-	function Label:constructor(...)
-		super.constructor(self, ...)
+	function Label:constructor()
 		self._text = ""
 		self._doesWrap = false
+		self.addons = {}
 	end
 	function Label:build(builder, parent)
 		local label = parent:AddLabel(self._text, self._doesWrap)
 		for _, addon in self.addons do
 			addon:build(label)
+		end
+		return self
+	end
+	function Label:extensions(extensions)
+		for _, extension in extensions do
+			local _exp = self.addons
+			table.insert(_exp, extension)
 		end
 		return self
 	end
@@ -249,7 +227,7 @@ end
 ]]
 local Toggle
 do
-	local super = BaseExtensions
+	local super = Element
 	Toggle = setmetatable({}, {
 		__tostring = function()
 			return "Toggle"
@@ -267,6 +245,7 @@ do
 		self._tooltip = ""
 		self._default = false
 		self._callback = function() end
+		self.addons = {}
 	end
 	function Toggle:build(builder, parent)
 		local toggle = parent:AddToggle(self.idx, {
@@ -277,6 +256,13 @@ do
 		})
 		for _, addon in self.addons do
 			addon:build(toggle)
+		end
+		return self
+	end
+	function Toggle:extensions(extensions)
+		for _, extension in extensions do
+			local _exp = self.addons
+			table.insert(_exp, extension)
 		end
 		return self
 	end
@@ -658,6 +644,30 @@ do
 	end
 end
 --[[
+	*
+	 * Represents a divider element.
+	 
+]]
+local Divider
+do
+	Divider = setmetatable({}, {
+		__tostring = function()
+			return "Divider"
+		end,
+	})
+	Divider.__index = Divider
+	function Divider.new(...)
+		local self = setmetatable({}, Divider)
+		return self:constructor(...) or self
+	end
+	function Divider:constructor()
+	end
+	function Divider:build(builder, parent)
+		parent:AddDivider()
+		return self
+	end
+end
+--[[
 	***********************************************************
 	 * SECTIONS
 	 * Description: Builder classes that hold elements
@@ -710,9 +720,9 @@ do
 		for _, child in self.children do
 			child:build(builder, box)
 		end
-		local _onAppear = builder.onAppear
+		local __onAppear = builder._onAppear
 		local _self = self
-		_onAppear[_self] = function()
+		__onAppear[_self] = function()
 			local _fn = box
 			local _exp = self.dependencies
 			-- ▼ ReadonlyArray.map ▼
@@ -846,6 +856,75 @@ do
 	end
 end
 --[[
+	*
+	 * Represents the SaveManager section.
+	 
+]]
+local ConfigSection
+do
+	ConfigSection = setmetatable({}, {
+		__tostring = function()
+			return "ConfigSection"
+		end,
+	})
+	ConfigSection.__index = ConfigSection
+	function ConfigSection.new(...)
+		local self = setmetatable({}, ConfigSection)
+		return self:constructor(...) or self
+	end
+	function ConfigSection:constructor()
+		self._type = "ConfigSection"
+		self._ignore = {}
+	end
+	function ConfigSection:build(builder, parent, side)
+		local saveManager = builder._saveManager
+		if saveManager then
+			saveManager:SetIgnoreIndexes(self._ignore)
+			saveManager:BuildConfigSection(parent)
+		else
+			error("SaveManager is not set!")
+		end
+		return self
+	end
+	function ConfigSection:ignore(indices)
+		for _, index in indices do
+			local _exp = self._ignore
+			table.insert(_exp, index)
+		end
+		return self
+	end
+end
+--[[
+	*
+	 * Represents the ThemeManager section.
+	 
+]]
+local ThemeSection
+do
+	ThemeSection = setmetatable({}, {
+		__tostring = function()
+			return "ThemeSection"
+		end,
+	})
+	ThemeSection.__index = ThemeSection
+	function ThemeSection.new(...)
+		local self = setmetatable({}, ThemeSection)
+		return self:constructor(...) or self
+	end
+	function ThemeSection:constructor()
+		self._type = "ThemeSection"
+	end
+	function ThemeSection:build(builder, parent, side)
+		local themeManager = builder._themeManager
+		if themeManager then
+			themeManager:ApplyToTab(parent)
+		else
+			error("ThemeManager is not set!")
+		end
+		return self
+	end
+end
+--[[
 	***********************************************************
 	 * INTERFACE
 	 * Description: Builder classes to construct the UI
@@ -895,6 +974,12 @@ do
 			local _exp = self.right_children
 			table.insert(_exp, child)
 		end
+		return self
+	end
+	function Page:applySaveManager()
+		return self
+	end
+	function Page:applyThemeManager()
 		return self
 	end
 	function Page:title(title)
@@ -978,16 +1063,25 @@ do
 		return self:constructor(...) or self
 	end
 	function Builder:constructor()
-		self.library = Library
-		self.onAppear = {}
+		self._library = Library
+		self._onAppear = {}
+		self._root = ""
+		self._name = ""
 		self.children = {}
 	end
 	function Builder:renderUI()
-		for _, window in self.children do
-			window:build(self, self.library)
+		if not self._library then
+			error("Library is not set!")
 		end
-		for _, callback in self.onAppear do
+		for _, window in self.children do
+			window:build(self, self._library)
+		end
+		for _, callback in self._onAppear do
 			task.defer(callback)
+		end
+		local _result = self._saveManager
+		if _result ~= nil then
+			_result:LoadAutoloadConfig()
 		end
 		return self
 	end
@@ -998,16 +1092,48 @@ do
 		end
 		return self
 	end
-	function Builder:setLibrary(library)
-		self.library = library
+	function Builder:library(library)
+		self._library = library
+		local _result = self._saveManager
+		if _result ~= nil then
+			_result:SetLibrary(library)
+		end
+		local _result_1 = self._themeManager
+		if _result_1 ~= nil then
+			_result_1:SetLibrary(library)
+		end
 		return self
 	end
-	function Builder:setSaveManager(saveManager)
-		self.saveManager = saveManager
+	function Builder:withSaveManager(saveManager)
+		self._saveManager = saveManager
+		local library = self._library
+		if library then
+			saveManager:SetLibrary(library)
+		end
+		saveManager:SetFolder(self._root .. "/" .. self._name)
+		saveManager:IgnoreThemeSettings()
 		return self
 	end
-	function Builder:setThemeManager(themeManager)
-		self.themeManager = themeManager
+	function Builder:withThemeManager(themeManager)
+		self._themeManager = themeManager
+		local library = self._library
+		if library then
+			themeManager:SetLibrary(library)
+		end
+		themeManager:SetFolder(self._root)
+		return self
+	end
+	function Builder:root(root, name)
+		self._root = root
+		self._name = name
+		local _result = self._saveManager
+		if _result ~= nil then
+			_result:SetFolder(root .. "/" .. name)
+		end
+		local _result_1 = self._themeManager
+		if _result_1 ~= nil then
+			_result_1:SetFolder(root)
+		end
 		return self
 	end
 end
@@ -1022,10 +1148,13 @@ return {
 	Slider = Slider,
 	Dropdown = Dropdown,
 	MultiDropdown = MultiDropdown,
+	Divider = Divider,
 	DependencyBox = DependencyBox,
 	Tab = Tab,
 	Groupbox = Groupbox,
 	Tabbox = Tabbox,
+	ConfigSection = ConfigSection,
+	ThemeSection = ThemeSection,
 	Page = Page,
 	Window = Window,
 	Builder = Builder,

@@ -210,26 +210,12 @@ abstract class Element {
 }
 
 /**
- * Abstract base class for elements with extensions.
- */
-abstract class BaseExtensions extends Element {
-	protected addons: Extension[] = [];
-
-	/**
-	 * Adds extensions to the element.
-	 */
-	public extensions(extensions: Extension[]) {
-		for (const extension of extensions) this.addons.push(extension);
-		return this;
-	}
-}
-
-/**
  * Represents a label element.
  */
-export class Label extends BaseExtensions {
+export class Label {
 	protected _text: string = "";
 	protected _doesWrap: boolean = false;
+	protected addons: Extension[] = [];
 
 	/**
 	 * Builds the label element on the specified parent element.
@@ -238,6 +224,14 @@ export class Label extends BaseExtensions {
 	public build(builder: Builder, parent: Elements.Box): Label {
 		const label = parent.AddLabel(this._text, this._doesWrap);
 		for (const addon of this.addons) addon.build(label);
+		return this;
+	}
+
+	/**
+	 * Adds extensions to the label.
+	 */
+	public extensions(extensions: Extension[]) {
+		for (const extension of extensions) this.addons.push(extension);
 		return this;
 	}
 
@@ -262,11 +256,12 @@ export class Label extends BaseExtensions {
 /**
  * Represents a toggle element.
  */
-export class Toggle extends BaseExtensions {
+export class Toggle extends Element {
 	protected _title: string = "";
 	protected _tooltip: string = "";
 	protected _default: boolean = false;
 	protected _callback: (value: boolean) => void = () => {};
+	protected addons: Extension[] = [];
 
 	/**
 	 * Builds the toggle element on the specified parent element.
@@ -280,6 +275,14 @@ export class Toggle extends BaseExtensions {
 			Callback: this._callback,
 		});
 		for (const addon of this.addons) addon.build(toggle);
+		return this;
+	}
+
+	/**
+	 * Adds extensions to the Toggle.
+	 */
+	public extensions(extensions: Extension[]) {
+		for (const extension of extensions) this.addons.push(extension);
 		return this;
 	}
 
@@ -742,6 +745,20 @@ export class MultiDropdown<V extends string> extends Element {
 	}
 }
 
+/**
+ * Represents a divider element.
+ */
+export class Divider {
+	/**
+	 * Builds the Divider on the specified parent element.
+	 * @hidden
+	 */
+	public build(builder: Builder, parent: Elements.Box): Divider {
+		parent.AddDivider();
+		return this;
+	}
+}
+
 /************************************************************
  * SECTIONS
  * Description: Builder classes that hold elements
@@ -750,12 +767,12 @@ export class MultiDropdown<V extends string> extends Element {
  * Abstract base class for sections.
  */
 abstract class Box {
-	protected children: (Element | DependencyBox)[] = [];
+	protected children: (Label | Divider | Element | DependencyBox)[] = [];
 
 	/**
 	 * Adds elements to the section.
 	 */
-	public elements(elements: (Element | DependencyBox)[]) {
+	public elements(elements: (Element | Divider | DependencyBox)[]) {
 		for (const element of elements) this.children.push(element);
 		return this;
 	}
@@ -774,7 +791,7 @@ export class DependencyBox extends Box {
 	public build(builder: Builder, parent: Elements.Box): DependencyBox {
 		const box = parent.AddDependencyBox();
 		for (const child of this.children) child.build(builder, box);
-		builder.onAppear.set(this, () =>
+		builder._onAppear.set(this, () =>
 			box.SetupDependencies(
 				this.dependencies.map(([idx, state]) => [Toggles[idx], state] as [Elements.Toggle, boolean]),
 			),
@@ -870,6 +887,49 @@ export class Tabbox {
 	}
 }
 
+/**
+ * Represents the SaveManager section.
+ */
+export class ConfigSection {
+	protected readonly _type = "ConfigSection";
+	protected _ignore: string[] = [];
+
+	/**
+	 * Builds the SaveManager on the specified parent element.
+	 * @hidden
+	 */
+	public build(builder: Builder, parent: Elements.Tab, side: Side): ConfigSection {
+		const saveManager = builder._saveManager;
+		if (saveManager) {
+			saveManager.SetIgnoreIndexes(this._ignore);
+			saveManager.BuildConfigSection(parent);
+		} else throw "SaveManager is not set!";
+		return this;
+	}
+
+	public ignore(indices: string[]) {
+		for (const index of indices) this._ignore.push(index);
+		return this;
+	}
+}
+
+/**
+ * Represents the ThemeManager section.
+ */
+export class ThemeSection {
+	protected readonly _type = "ThemeSection";
+	/**
+	 * Builds the ThemeManager on the specified parent element.
+	 * @hidden
+	 */
+	public build(builder: Builder, parent: Elements.Tab, side: Side): ThemeSection {
+		const themeManager = builder._themeManager;
+		if (themeManager) themeManager.ApplyToTab(parent);
+		else throw "ThemeManager is not set!";
+		return this;
+	}
+}
+
 /************************************************************
  * INTERFACE
  * Description: Builder classes to construct the UI
@@ -879,8 +939,8 @@ export class Tabbox {
  */
 export class Page {
 	protected name: string = "PAGE";
-	protected left_children: (Groupbox | Tabbox)[] = [];
-	protected right_children: (Groupbox | Tabbox)[] = [];
+	protected left_children: (Groupbox | Tabbox | ThemeSection)[] = [];
+	protected right_children: (Groupbox | Tabbox | ConfigSection)[] = [];
 
 	/**
 	 * Builds the page on the specified parent element.
@@ -896,7 +956,7 @@ export class Page {
 	/**
 	 * Adds sections to the left side of the page.
 	 */
-	public left(left: (Groupbox | Tabbox)[]): Page {
+	public left(left: (Groupbox | Tabbox | ThemeSection)[]): Page {
 		for (const child of left) this.left_children.push(child);
 		return this;
 	}
@@ -904,8 +964,22 @@ export class Page {
 	/**
 	 * Adds sections to the right side of the page.
 	 */
-	public right(right: (Groupbox | Tabbox)[]): Page {
+	public right(right: (Groupbox | Tabbox | ConfigSection)[]): Page {
 		for (const child of right) this.right_children.push(child);
+		return this;
+	}
+
+	/**
+	 * Applies the save manager to the page.
+	 */
+	public applySaveManager(): Page {
+		return this;
+	}
+
+	/**
+	 * Applies the theme manager to the page.
+	 */
+	public applyThemeManager(): Page {
 		return this;
 	}
 
@@ -985,25 +1059,29 @@ export class Window {
  */
 export class Builder {
 	/** @hidden */
-	public library: Library = Library;
+	public _library?: Library = Library;
 
 	/** @hidden */
-	public saveManager!: SaveManager;
+	public _saveManager?: SaveManager;
 
 	/** @hidden */
-	public themeManager!: ThemeManager;
+	public _themeManager?: ThemeManager;
 
 	/** @hidden */
-	public onAppear = new Map<unknown, () => void>();
+	public _onAppear = new Map<unknown, () => void>();
 
+	protected _root: string = "";
+	protected _name: string = "";
 	protected children: Window[] = [];
 
 	/**
 	 * Creates the UI.
 	 */
 	public renderUI(): Builder {
-		for (const window of this.children) window.build(this, this.library);
-		for (const [, callback] of this.onAppear) task.defer(callback);
+		if (!this._library) throw "Library is not set!";
+		for (const window of this.children) window.build(this, this._library);
+		for (const [, callback] of this._onAppear) task.defer(callback);
+		this._saveManager?.LoadAutoloadConfig();
 		return this;
 	}
 
@@ -1018,18 +1096,50 @@ export class Builder {
 	/**
 	 * Sets the library to use for UI creation.
 	 */
-	public setLibrary(library: Library): Builder {
-		this.library = library;
+	public library(library: Library): Builder {
+		this._library = library;
+		this._saveManager?.SetLibrary(library);
+		this._themeManager?.SetLibrary(library);
 		return this;
 	}
 
-	public setSaveManager(saveManager: SaveManager): Builder {
-		this.saveManager = saveManager;
+	/**
+	 * Sets the save manager
+	 */
+	public withSaveManager(saveManager: SaveManager): Builder {
+		this._saveManager = saveManager;
+
+		const library = this._library;
+		if (library) saveManager.SetLibrary(library);
+
+		saveManager.SetFolder(this._root + "/" + this._name);
+		saveManager.IgnoreThemeSettings();
+
 		return this;
 	}
 
-	public setThemeManager(themeManager: ThemeManager): Builder {
-		this.themeManager = themeManager;
+	/**
+	 * Sets the theme manager
+	 */
+	public withThemeManager(themeManager: ThemeManager): Builder {
+		this._themeManager = themeManager;
+
+		const library = this._library;
+		if (library) themeManager.SetLibrary(library);
+
+		themeManager.SetFolder(this._root);
+
+		return this;
+	}
+
+	/**
+	 * Sets the configuration root and path
+	 */
+	public root(root: string, name: string): Builder {
+		this._root = root;
+		this._name = name;
+		this._saveManager?.SetFolder(root + "/" + name);
+		this._themeManager?.SetFolder(root);
 		return this;
 	}
 }
