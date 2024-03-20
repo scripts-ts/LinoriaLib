@@ -48,13 +48,13 @@ abstract class Extension {
  * Represents a key picker extension.
  */
 export class KeyPicker extends Extension {
-	protected default: KeypickerBind = "Delete";
-	protected syncToggleState: boolean = false;
-	protected mode: KeyPickerMode = "Toggle";
-	protected title: string = "";
-	protected noUI: boolean = false;
-	protected callback: (value: boolean) => void = () => {};
-	protected changedCallback: (value: Enum.KeyCode | Enum.UserInputType) => void = () => {};
+	protected _title: string = "";
+	protected _noUI: boolean = false;
+	protected _mode: KeyPickerMode = "Toggle";
+	protected _default: KeypickerBind = "Delete";
+	protected _syncToggle: boolean = false;
+	protected _callback: (value: boolean) => void = () => {};
+	protected _changedCallback: (value: Enum.KeyCode | Enum.UserInputType) => void = () => {};
 
 	/**
 	 * Builds the key picker extension on the specified parent element.
@@ -62,31 +62,38 @@ export class KeyPicker extends Extension {
 	 */
 	public build(parent: Elements.BaseAddons): KeyPicker {
 		parent.AddKeyPicker(this.idx, {
-			Default: this.default,
-			SyncToggleState: this.syncToggleState,
-			Mode: this.mode,
-			Text: this.title,
-			NoUI: this.noUI,
-			Callback: this.callback,
-			ChangedCallback: this.changedCallback,
+			Default: this._default,
+			SyncToggleState: this._syncToggle,
+			Mode: this._mode,
+			Text: this._title,
+			NoUI: this._noUI,
+			Callback: this._callback,
+			ChangedCallback: this._changedCallback,
 		});
+		return this;
+	}
+
+	/**
+	 * Sets the title of the key picker.
+	 */
+	public title(title: string): KeyPicker {
+		this._title = title;
+		return this;
+	}
+
+	/**
+	 * Whether to show the key picker on the keybind menu.
+	 */
+	public hidden(hide: boolean): KeyPicker {
+		this._noUI = hide;
 		return this;
 	}
 
 	/**
 	 * Sets the default value of the key picker.
 	 */
-	public setBind(value: KeypickerBind): KeyPicker {
-		this.default = value;
-		return this;
-	}
-
-	/**
-	 * SyncToggleState only works with toggles.
-	 * When enabled, the keybind has its state synced with its parent toggle.
-	 */
-	public setSyncToggleState(syncToggleState: boolean): KeyPicker {
-		this.syncToggleState = syncToggleState;
+	public bind(value: KeypickerBind): KeyPicker {
+		this._default = value;
 		return this;
 	}
 
@@ -96,40 +103,33 @@ export class KeyPicker extends Extension {
 	 * "Toggle" - The key picker is toggled on and off.
 	 * "Always" - The key picker is always active.
 	 */
-	public setMode(mode: KeyPickerMode): KeyPicker {
-		this.mode = mode;
+	public mode(mode: KeyPickerMode): KeyPicker {
+		this._mode = mode;
 		return this;
 	}
 
 	/**
-	 * Sets the title of the key picker.
+	 * SyncToggleState only works with toggles.
+	 * When enabled, the keybind has its state synced with its parent toggle.
 	 */
-	public setTitle(title: string): KeyPicker {
-		this.title = title;
-		return this;
-	}
-
-	/**
-	 * Whether to show the key picker on the keybind menu.
-	 */
-	public setNoUI(noUI: boolean): KeyPicker {
-		this.noUI = noUI;
+	public sync(enabled: boolean): KeyPicker {
+		this._syncToggle = enabled;
 		return this;
 	}
 
 	/**
 	 * Subscribes to the key picker's state
 	 */
-	public onCallback(callback: (value: boolean) => void): KeyPicker {
-		this.callback = callback;
+	public onClick(callback: (value: boolean) => void): KeyPicker {
+		this._callback = callback;
 		return this;
 	}
 
 	/**
 	 * Subscribes to the key picker's keybind
 	 */
-	public onKeybind(callback: (value: Enum.KeyCode | Enum.UserInputType) => void): KeyPicker {
-		this.changedCallback = callback;
+	public onChanged(callback: (value: Enum.KeyCode | Enum.UserInputType) => void): KeyPicker {
+		this._changedCallback = callback;
 		return this;
 	}
 }
@@ -138,10 +138,10 @@ export class KeyPicker extends Extension {
  * Represents a color picker extension.
  */
 export class ColorPicker extends Extension {
-	protected default: Color3 = new Color3(1, 1, 1);
-	protected title: string = "";
-	protected transparency?: number;
-	protected callback: (value: Color3) => void = () => {};
+	protected _title: string = "";
+	protected _default: Color3 = new Color3(1, 1, 1);
+	protected _transparency?: number;
+	protected _callback: (value: Color3) => void = () => {};
 
 	/**
 	 * Builds the color picker extension on the specified parent element.
@@ -149,27 +149,27 @@ export class ColorPicker extends Extension {
 	 */
 	public build(parent: Elements.BaseAddons): ColorPicker {
 		parent.AddColorPicker(this.idx, {
-			Default: this.default,
-			Title: this.title,
-			Transparency: this.transparency,
-			Callback: this.callback,
+			Default: this._default,
+			Title: this._title,
+			Transparency: this._transparency,
+			Callback: this._callback,
 		});
-		return this;
-	}
-
-	/**
-	 * Sets the default value of the color picker.
-	 */
-	public setValue(value: Color3): ColorPicker {
-		this.default = value;
 		return this;
 	}
 
 	/**
 	 * Sets the title of the color picker.
 	 */
-	public setTitle(title: string): ColorPicker {
-		this.title = title;
+	public title(title: string): ColorPicker {
+		this._title = title;
+		return this;
+	}
+
+	/**
+	 * Sets the default value of the color picker.
+	 */
+	public default(value: Color3): ColorPicker {
+		this._default = value;
 		return this;
 	}
 
@@ -177,16 +177,16 @@ export class ColorPicker extends Extension {
 	 * Sets the transparency of the color picker.
 	 * If set, the color picker will have a transparency slider.
 	 */
-	public setTransparency(transparency: number): ColorPicker {
-		this.transparency = transparency;
+	public transparency(transparency: number): ColorPicker {
+		this._transparency = transparency;
 		return this;
 	}
 
 	/**
 	 * Subscribes to the color picker's state
 	 */
-	public onCallback(callback: (value: Color3) => void): ColorPicker {
-		this.callback = callback;
+	public onChanged(callback: (value: Color3) => void): ColorPicker {
+		this._callback = callback;
 		return this;
 	}
 }
@@ -236,15 +236,15 @@ abstract class BaseExtensions extends Element {
  * Represents a label element.
  */
 export class Label extends BaseExtensions {
-	protected text: string = "";
-	protected doesWrap: boolean = false;
+	protected _text: string = "";
+	protected _doesWrap: boolean = false;
 
 	/**
 	 * Builds the label element on the specified parent element.
 	 * @hidden
 	 */
 	public build(builder: Builder, parent: Elements.Box): Label {
-		const label = parent.AddLabel(this.text, this.doesWrap);
+		const label = parent.AddLabel(this._text, this._doesWrap);
 		for (const addon of this.addons) addon.build(label);
 		return this;
 	}
@@ -252,8 +252,8 @@ export class Label extends BaseExtensions {
 	/**
 	 * Sets the text of the label.
 	 */
-	public setText(text: string): Label {
-		this.text = text;
+	public text(text: string): Label {
+		this._text = text;
 		return this;
 	}
 
@@ -261,8 +261,8 @@ export class Label extends BaseExtensions {
 	 * Sets whether the label should wrap text.
 	 * Please note that if wrap is enabled, the label cannot have any extensions.
 	 */
-	public setWrap(wrap: boolean): Label {
-		this.doesWrap = wrap;
+	public wrap(wrap: boolean): Label {
+		this._doesWrap = wrap;
 		return this;
 	}
 }
@@ -271,10 +271,10 @@ export class Label extends BaseExtensions {
  * Represents a toggle element.
  */
 export class Toggle extends BaseExtensions {
-	protected title: string = "";
-	protected tooltip: string = "";
-	protected default: boolean = false;
-	protected callback: (value: boolean) => void = () => {};
+	protected _title: string = "";
+	protected _tooltip: string = "";
+	protected _default: boolean = false;
+	protected _callback: (value: boolean) => void = () => {};
 
 	/**
 	 * Builds the toggle element on the specified parent element.
@@ -282,10 +282,10 @@ export class Toggle extends BaseExtensions {
 	 */
 	public build(builder: Builder, parent: Elements.Box): Toggle {
 		const toggle = parent.AddToggle(this.idx, {
-			Text: this.title,
-			Default: this.default,
-			Tooltip: this.tooltip,
-			Callback: this.callback,
+			Text: this._title,
+			Default: this._default,
+			Tooltip: this._tooltip,
+			Callback: this._callback,
 		});
 		for (const addon of this.addons) addon.build(toggle);
 		return this;
@@ -294,32 +294,32 @@ export class Toggle extends BaseExtensions {
 	/**
 	 * Sets the title of the toggle.
 	 */
-	public setTitle(name: string): Toggle {
-		this.title = name;
+	public title(title: string): Toggle {
+		this._title = title;
 		return this;
 	}
 
 	/**
 	 * Sets the tooltip of the toggle.
 	 */
-	public setTooltip(tooltip: string): Toggle {
-		this.tooltip = tooltip;
+	public tooltip(tooltip: string): Toggle {
+		this._tooltip = tooltip;
 		return this;
 	}
 
 	/**
 	 * Sets the default value of the toggle.
 	 */
-	public setValue(value: boolean): Toggle {
-		this.default = value;
+	public default(value: boolean): Toggle {
+		this._default = value;
 		return this;
 	}
 
 	/**
 	 * Subscribes to the toggle's state
 	 */
-	public onCallback(callback: (value: boolean) => void): Toggle {
-		this.callback = callback;
+	public onChanged(callback: (value: boolean) => void): Toggle {
+		this._callback = callback;
 		return this;
 	}
 }
@@ -328,10 +328,10 @@ export class Toggle extends BaseExtensions {
  * Represents a button element.
  */
 export class Button extends Element {
-	protected title: string = "";
-	protected tooltip: string = "";
-	protected doubleClick: boolean = false;
-	protected func: () => void = () => {};
+	protected _title: string = "";
+	protected _tooltip: string = "";
+	protected _doubleClick: boolean = false;
+	protected _callback: () => void = () => {};
 
 	/**
 	 * Builds the button element on the specified parent element.
@@ -339,10 +339,10 @@ export class Button extends Element {
 	 */
 	public build(builder: Builder, parent: Elements.Box): Button {
 		parent.AddButton({
-			Text: this.title,
-			Func: this.func,
-			DoubleClick: this.doubleClick,
-			Tooltip: this.tooltip,
+			Text: this._title,
+			Func: this._callback,
+			DoubleClick: this._doubleClick,
+			Tooltip: this._tooltip,
 		});
 		return this;
 	}
@@ -350,24 +350,24 @@ export class Button extends Element {
 	/**
 	 * Sets the title of the button.
 	 */
-	public setTitle(title: string): Button {
-		this.title = title;
+	public title(title: string): Button {
+		this._title = title;
 		return this;
 	}
 
 	/**
 	 * Sets the tooltip of the button.
 	 */
-	public setTooltip(tooltip: string): Button {
-		this.tooltip = tooltip;
+	public tooltip(tooltip: string): Button {
+		this._tooltip = tooltip;
 		return this;
 	}
 
 	/**
 	 * Sets whether the button should trigger on double click.
 	 */
-	public setDoubleClick(doubleClick: boolean): Button {
-		this.doubleClick = doubleClick;
+	public doubleClick(doubleClick: boolean): Button {
+		this._doubleClick = doubleClick;
 		return this;
 	}
 
@@ -375,7 +375,7 @@ export class Button extends Element {
 	 * Subscribes to the button's click event
 	 */
 	public onClick(func: () => void): Button {
-		this.func = func;
+		this._callback = func;
 		return this;
 	}
 }
@@ -384,14 +384,14 @@ export class Button extends Element {
  * Represents an input element.
  */
 export class Input extends Element {
-	protected title: string = "";
-	protected tooltip: string = "";
-	protected default: string = "";
-	protected placeholder: string = "";
-	protected numeric: boolean = false;
-	protected finished: boolean = false;
-	protected maxLength?: number;
-	protected callback: (value: string) => void = () => {};
+	protected _title: string = "";
+	protected _tooltip: string = "";
+	protected _default: string = "";
+	protected _placeholder: string = "";
+	protected _numeric: boolean = false;
+	protected _finished: boolean = false;
+	protected _maxLength?: number;
+	protected _callback: (value: string) => void = () => {};
 
 	/**
 	 * Builds the input element on the specified parent element.
@@ -399,14 +399,14 @@ export class Input extends Element {
 	 */
 	public build(builder: Builder, parent: Elements.Box): Input {
 		parent.AddInput(this.idx, {
-			Default: this.default,
-			Numeric: this.numeric,
-			Finished: this.finished,
-			Text: this.title,
-			Tooltip: this.tooltip,
-			Placeholder: this.placeholder,
-			MaxLength: this.maxLength,
-			Callback: this.callback,
+			Default: this._default,
+			Numeric: this._numeric,
+			Finished: this._finished,
+			Text: this._title,
+			Tooltip: this._tooltip,
+			Placeholder: this._placeholder,
+			MaxLength: this._maxLength,
+			Callback: this._callback,
 		});
 		return this;
 	}
@@ -414,64 +414,64 @@ export class Input extends Element {
 	/**
 	 * Sets the title of the input.
 	 */
-	public setTitle(title: string): Input {
-		this.title = title;
+	public title(title: string): Input {
+		this._title = title;
 		return this;
 	}
 
 	/**
 	 * Sets the tooltip of the input.
 	 */
-	public setTooltip(tooltip: string): Input {
-		this.tooltip = tooltip;
+	public tooltip(tooltip: string): Input {
+		this._tooltip = tooltip;
 		return this;
 	}
 
 	/**
 	 * Sets the default value of the input.
 	 */
-	public setValue(value: string): Input {
-		this.default = value;
+	public default(value: string): Input {
+		this._default = value;
 		return this;
 	}
 
 	/**
 	 * Sets the placeholder of the input.
 	 */
-	public setPlaceholder(placeholder: string): Input {
-		this.placeholder = placeholder;
+	public placeholder(placeholder: string): Input {
+		this._placeholder = placeholder;
 		return this;
 	}
 
 	/**
 	 * Sets whether the input should only accept numeric values.
 	 */
-	public setNumeric(numeric: boolean): Input {
-		this.numeric = numeric;
+	public numeric(numeric: boolean): Input {
+		this._numeric = numeric;
 		return this;
 	}
 
 	/**
 	 * Sets whether callback should only trigger when finished typing.
 	 */
-	public setFinished(finished: boolean): Input {
-		this.finished = finished;
+	public finished(finished: boolean): Input {
+		this._finished = finished;
 		return this;
 	}
 
 	/**
 	 * Sets the maximum length of the input.
 	 */
-	public setMaxLength(maxLength: number): Input {
-		this.maxLength = maxLength;
+	public maxLength(maxLength: number): Input {
+		this._maxLength = maxLength;
 		return this;
 	}
 
 	/**
 	 * Subscribes to the input's value
 	 */
-	public onCallback(callback: (value: string) => void): Input {
-		this.callback = callback;
+	public onChanged(callback: (value: string) => void): Input {
+		this._callback = callback;
 		return this;
 	}
 }
@@ -480,15 +480,15 @@ export class Input extends Element {
  * Represents a slider element.
  */
 export class Slider extends Element {
-	protected title: string = "";
-	protected default: number = 0;
-	protected min: number = 0;
-	protected max: number = 1;
-	protected rounding: number = 2;
-	protected suffix: string = "";
-	protected compact: boolean = false;
-	protected hideMax: boolean = false;
-	protected callback: (value: number) => void = () => {};
+	protected _title: string = "";
+	protected _default: number = 0;
+	protected _min: number = 0;
+	protected _max: number = 1;
+	protected _rounding: number = 2;
+	protected _suffix: string = "";
+	protected _compact: boolean = false;
+	protected _hideMax: boolean = false;
+	protected _callback: (value: number) => void = () => {};
 
 	/**
 	 * Builds the slider element on the specified parent element.
@@ -496,15 +496,15 @@ export class Slider extends Element {
 	 */
 	public build(builder: Builder, parent: Elements.Box): Slider {
 		parent.AddSlider(this.idx, {
-			Text: this.title,
-			Default: this.default,
-			Min: this.min,
-			Max: this.max,
-			Rounding: this.rounding,
-			Suffix: this.suffix,
-			Compact: this.compact,
-			HideMax: this.hideMax,
-			Callback: this.callback,
+			Text: this._title,
+			Default: this._default,
+			Min: this._min,
+			Max: this._max,
+			Rounding: this._rounding,
+			Suffix: this._suffix,
+			Compact: this._compact,
+			HideMax: this._hideMax,
+			Callback: this._callback,
 		});
 		return this;
 	}
@@ -512,72 +512,65 @@ export class Slider extends Element {
 	/**
 	 * Sets the title of the slider.
 	 */
-	public setTitle(title: string): Slider {
-		this.title = title;
+	public title(title: string): Slider {
+		this._title = title;
 		return this;
 	}
 
 	/**
 	 * Sets the default value of the slider.
 	 */
-	public setValue(value: number): Slider {
-		this.default = value;
+	public default(value: number): Slider {
+		this._default = value;
 		return this;
 	}
 
 	/**
-	 * Sets the minimum value of the slider.
+	 * Sets the value limits of the slider.
 	 */
-	public setMin(min: number): Slider {
-		this.min = min;
-		return this;
-	}
-
-	/**
-	 * Sets the maximum value of the slider.
-	 */
-	public setMax(max: number): Slider {
-		this.max = max;
+	public limits(min: number, max: number): Slider {
+		this._min = min;
+		this._max = max;
 		return this;
 	}
 
 	/**
 	 * Sets the number of decimal places to which the value is rounded.
 	 */
-	public setRounding(rounding: number): Slider {
-		this.rounding = rounding;
+	public round(decimals: number): Slider {
+		this._rounding = decimals;
 		return this;
 	}
 
 	/**
 	 * Sets the suffix of the value.
 	 */
-	public setSuffix(suffix: string): Slider {
-		this.suffix = suffix;
+	public suffix(suffix: string): Slider {
+		this._suffix = suffix;
 		return this;
 	}
 
 	/**
 	 * Sets whether the slider should be compact.
 	 */
-	public setCompact(compact: boolean): Slider {
-		this.compact = compact;
+	public compact(compact: boolean): Slider {
+		this._compact = compact;
 		return this;
 	}
 
 	/**
 	 * Sets whether the maximum value should be hidden.
 	 */
-	public setHideMax(hideMax: boolean): Slider {
-		this.hideMax = hideMax;
+	public hideMax(hideMax: boolean): Slider {
+		this._hideMax = hideMax;
 		return this;
 	}
 
 	/**
 	 * Subscribes to the slider's value
 	 */
-	public onCallback(callback: (value: number) => void): Slider {
-		this.callback = callback;
+	public onChanged(callback: (value: number) => void): Slider {
+		this._callback = callback;
 		return this;
 	}
 }
@@ -586,13 +579,13 @@ export class Slider extends Element {
  * Represents a dropdown element.
  */
 export class Dropdown<V extends string> extends Element {
-	protected title: string = "";
-	protected tooltip: string = "";
-	protected values: V[] = [];
-	protected default: number | V = 1;
-	protected allowNull: boolean = false;
-	protected specialType?: SpecialType;
-	protected callback: (value: V) => void = () => {};
+	protected _title: string = "";
+	protected _tooltip: string = "";
+	protected _values: V[] = [];
+	protected _default: number | V = 1;
+	protected _allowNull: boolean = false;
+	protected _specialType?: SpecialType;
+	protected _callback: (value: V) => void = () => {};
 
 	/**
 	 * Builds the dropdown element on the specified parent element.
@@ -600,14 +593,14 @@ export class Dropdown<V extends string> extends Element {
 	 */
 	public build(builder: Builder, parent: Elements.Box): Dropdown<V> {
 		parent.AddDropdown(this.idx, {
-			Text: this.title,
-			Tooltip: this.tooltip,
-			Values: this.values,
-			Default: this.default,
+			Text: this._title,
+			Tooltip: this._tooltip,
+			Values: this._values,
+			Default: this._default,
 			Multi: false,
-			AllowNull: this.allowNull,
-			SpecialType: this.specialType,
-			Callback: this.callback,
+			AllowNull: this._allowNull,
+			SpecialType: this._specialType,
+			Callback: this._callback,
 		});
 		return this;
 	}
@@ -615,68 +608,71 @@ export class Dropdown<V extends string> extends Element {
 	/**
 	 * Sets the title of the dropdown.
 	 */
-	public setTitle(title: string): Dropdown<V> {
-		this.title = title;
+	public title(title: string): Dropdown<V> {
+		this._title = title;
 		return this;
 	}
 
 	/**
 	 * Sets the tooltip of the dropdown.
 	 */
-	public setTooltip(tooltip: string): Dropdown<V> {
-		this.tooltip = tooltip;
+	public tooltip(tooltip: string): Dropdown<V> {
+		this._tooltip = tooltip;
 		return this;
 	}
 
 	/**
 	 * Sets the options of the dropdown.
 	 */
-	public setOptions(options: V[]): Dropdown<V> {
-		this.values = options;
+	public options(options: V[]): Dropdown<V> {
+		this._values = options;
 		return this;
 	}
 
 	/**
 	 * Sets the default value of the dropdown.
 	 */
-	public setValue(value: number | V): Dropdown<V> {
-		this.default = value;
+	public default(value: number | V): Dropdown<V> {
+		this._default = value;
 		return this;
 	}
 
 	/**
 	 * Sets whether the dropdown should allow null values.
 	 */
-	public setAllowNull(allowNull: boolean): Dropdown<V> {
-		this.allowNull = allowNull;
+	public canNull(allowNull: boolean): Dropdown<V> {
+		this._allowNull = allowNull;
 		return this;
 	}
 
 	/**
 	 * Sets the special type of the dropdown.
 	 */
-	public setSpecialType(specialType: SpecialType): Dropdown<V> {
-		this.specialType = specialType;
+	public specialType(specialType: SpecialType): Dropdown<V> {
+		this._specialType = specialType;
 		return this;
 	}
 
 	/**
 	 * Subscribes to the dropdown's value
 	 */
-	public onCallback(callback: (value: V) => void): Dropdown<V> {
-		this.callback = callback;
+	public onChange(callback: (value: V) => void): Dropdown<V> {
+		this._callback = callback;
 		return this;
 	}
 }
 
+/**
+ * Represents a multi dropdown element.
+ */
 export class MultiDropdown<V extends string> extends Element {
-	protected title: string = "";
-	protected tooltip: string = "";
-	protected values: V[] = [];
-	protected default: V[] = [];
-	protected allowNull: boolean = false;
-	protected specialType?: SpecialType;
-	protected callback: (value: Set<V>) => void = () => {};
+	protected _title: string = "";
+	protected _tooltip: string = "";
+	protected _values: V[] = [];
+	protected _default: V[] = [];
+	protected _allowNull: boolean = false;
+	protected _specialType?: SpecialType;
+	protected _callback: (value: Set<V>) => void = () => {};
 
 	/**
 	 * Builds the multi dropdown element on the specified parent element.
@@ -684,72 +680,72 @@ export class MultiDropdown<V extends string> extends Element {
 	 */
 	public build(builder: Builder, parent: Elements.Box): MultiDropdown<V> {
 		const dropdown = parent.AddDropdown(this.idx, {
-			Text: this.title,
-			Tooltip: this.tooltip,
-			Values: this.values,
-			Default: this.default[0] ?? this.values[0],
+			Text: this._title,
+			Tooltip: this._tooltip,
+			Values: this._values,
+			Default: this._default[0] ?? this._values[0],
 			Multi: true,
-			AllowNull: this.allowNull,
-			SpecialType: this.specialType,
-			Callback: this.callback,
+			AllowNull: this._allowNull,
+			SpecialType: this._specialType,
+			Callback: this._callback,
 		});
-		dropdown.SetValue(new Set(this.default));
+		dropdown.SetValue(new Set(this._default));
 		return this;
 	}
 
 	/**
 	 * Sets the title of the multi dropdown.
 	 */
-	public setTitle(title: string): MultiDropdown<V> {
-		this.title = title;
+	public title(title: string): MultiDropdown<V> {
+		this._title = title;
 		return this;
 	}
 
 	/**
 	 * Sets the tooltip of the multi dropdown.
 	 */
-	public setTooltip(tooltip: string): MultiDropdown<V> {
-		this.tooltip = tooltip;
+	public tooltip(tooltip: string): MultiDropdown<V> {
+		this._tooltip = tooltip;
 		return this;
 	}
 
 	/**
 	 * Sets the options of the multi dropdown.
 	 */
-	public setOptions(options: V[]): MultiDropdown<V> {
-		this.values = options;
+	public options(options: V[]): MultiDropdown<V> {
+		this._values = options;
 		return this;
 	}
 
 	/**
 	 * Sets the default value of the multi dropdown.
 	 */
-	public setValue(value: V[]): MultiDropdown<V> {
-		this.default = value;
+	public default(value: V[]): MultiDropdown<V> {
+		this._default = value;
 		return this;
 	}
 
 	/**
 	 * Sets whether the multi dropdown should allow null values.
 	 */
-	public setAllowNull(allowNull: boolean): MultiDropdown<V> {
-		this.allowNull = allowNull;
+	public canNull(enabled: boolean): MultiDropdown<V> {
+		this._allowNull = enabled;
 		return this;
 	}
 
 	/**
 	 * Sets the special type of the multi dropdown.
 	 */
-	public setSpecialType(specialType: SpecialType): MultiDropdown<V> {
-		this.specialType = specialType;
+	public specialType(specialType: SpecialType): MultiDropdown<V> {
+		this._specialType = specialType;
 		return this;
 	}
 
 	/**
 	 * Subscribes to the multi dropdown's value
 	 */
-	public onCallback(callback: (value: Set<V>) => void): MultiDropdown<V> {
-		this.callback = callback;
+	public onChange(callback: (value: Set<V>) => void): MultiDropdown<V> {
+		this._callback = callback;
 		return this;
 	}
 }
@@ -795,7 +791,7 @@ export class DependencyBox extends Box {
 	 * Sets the dependency of the dependency box.
 	 * The box will only be visible if the specified Toggle is in the specified state.
 	 */
-	public setDependency(idx: string, state: boolean) {
+	public dependsOn(idx: string, state: boolean) {
 		this.dependent = idx;
 		this.state = state;
 		return this;
@@ -821,8 +817,8 @@ export class Tab extends Box {
 	/**
 	 * Sets the name of the tab.
 	 */
-	public setName(name: string) {
-		this.name = name;
+	public title(title: string) {
+		this.name = title;
 		return this;
 	}
 }
@@ -848,8 +844,8 @@ export class Groupbox extends Box {
 	/**
 	 * Sets the name of the groupbox.
 	 */
-	public setName(name: string): Groupbox {
-		this.name = name;
+	public title(title: string): Groupbox {
+		this.name = title;
 		return this;
 	}
 }
@@ -921,8 +917,8 @@ export class Page {
 	/**
 	 * Sets the name of the page.
 	 */
-	public setName(name: string): Page {
-		this.name = name;
+	public title(title: string): Page {
+		this.name = title;
 		return this;
 	}
 }
@@ -955,7 +951,7 @@ export class Window {
 	/**
 	 * Sets the title of the window.
 	 */
-	public setTitle(title: string): Window {
+	public title(title: string): Window {
 		this.configs.Title = title;
 		return this;
 	}
@@ -963,7 +959,7 @@ export class Window {
 	/**
 	 * Sets whether the window is centered on the screen.
 	 */
-	public setCenter(center: boolean): Window {
+	public centered(center: boolean): Window {
 		this.configs.Center = center;
 		return this;
 	}
@@ -971,7 +967,7 @@ export class Window {
 	/**
 	 * Sets visibility of the window when created.
 	 */
-	public setAutoShow(autoShow: boolean): Window {
+	public autoShow(autoShow: boolean): Window {
 		this.configs.AutoShow = autoShow;
 		return this;
 	}
@@ -979,7 +975,7 @@ export class Window {
 	/**
 	 * Sets the time it takes for the window to fade in and out.
 	 */
-	public setMenuFadeTime(menuFadeTime: number): Window {
+	public withFadeTime(menuFadeTime: number): Window {
 		this.configs.MenuFadeTime = menuFadeTime;
 		return this;
 	}

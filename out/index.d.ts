@@ -36,81 +36,81 @@ declare abstract class Extension {
  * Represents a key picker extension.
  */
 export declare class KeyPicker extends Extension {
-    protected default: KeypickerBind;
-    protected syncToggleState: boolean;
-    protected mode: KeyPickerMode;
-    protected title: string;
-    protected noUI: boolean;
-    protected callback: (value: boolean) => void;
-    protected changedCallback: (value: Enum.KeyCode | Enum.UserInputType) => void;
+    protected _title: string;
+    protected _noUI: boolean;
+    protected _mode: KeyPickerMode;
+    protected _default: KeypickerBind;
+    protected _syncToggle: boolean;
+    protected _callback: (value: boolean) => void;
+    protected _changedCallback: (value: Enum.KeyCode | Enum.UserInputType) => void;
     /**
      * Builds the key picker extension on the specified parent element.
      * @hidden
      */
     build(parent: Elements.BaseAddons): KeyPicker;
     /**
+     * Sets the title of the key picker.
+     */
+    title(title: string): KeyPicker;
+    /**
+     * Whether to show the key picker on the keybind menu.
+     */
+    hidden(hide: boolean): KeyPicker;
+    /**
      * Sets the default value of the key picker.
      */
-    setBind(value: KeypickerBind): KeyPicker;
-    /**
-     * SyncToggleState only works with toggles.
-     * When enabled, the keybind has its state synced with its parent toggle.
-     */
-    setSyncToggleState(syncToggleState: boolean): KeyPicker;
+    bind(value: KeypickerBind): KeyPicker;
     /**
      * Sets the mode of the key picker.
      * "Hold" - The key picker is active while the key is held.
      * "Toggle" - The key picker is toggled on and off.
      * "Always" - The key picker is always active.
      */
-    setMode(mode: KeyPickerMode): KeyPicker;
+    mode(mode: KeyPickerMode): KeyPicker;
     /**
-     * Sets the title of the key picker.
+     * SyncToggleState only works with toggles.
+     * When enabled, the keybind has its state synced with its parent toggle.
      */
-    setTitle(title: string): KeyPicker;
-    /**
-     * Whether to show the key picker on the keybind menu.
-     */
-    setNoUI(noUI: boolean): KeyPicker;
+    sync(enabled: boolean): KeyPicker;
     /**
      * Subscribes to the key picker's state
      */
-    onCallback(callback: (value: boolean) => void): KeyPicker;
+    onClick(callback: (value: boolean) => void): KeyPicker;
     /**
      * Subscribes to the key picker's keybind
      */
-    onKeybind(callback: (value: Enum.KeyCode | Enum.UserInputType) => void): KeyPicker;
+    onChanged(callback: (value: Enum.KeyCode | Enum.UserInputType) => void): KeyPicker;
 }
 /**
  * Represents a color picker extension.
  */
 export declare class ColorPicker extends Extension {
-    protected default: Color3;
-    protected title: string;
-    protected transparency?: number;
-    protected callback: (value: Color3) => void;
+    protected _title: string;
+    protected _default: Color3;
+    protected _transparency?: number;
+    protected _callback: (value: Color3) => void;
     /**
      * Builds the color picker extension on the specified parent element.
      * @hidden
      */
     build(parent: Elements.BaseAddons): ColorPicker;
     /**
-     * Sets the default value of the color picker.
-     */
-    setValue(value: Color3): ColorPicker;
-    /**
      * Sets the title of the color picker.
      */
-    setTitle(title: string): ColorPicker;
+    title(title: string): ColorPicker;
+    /**
+     * Sets the default value of the color picker.
+     */
+    default(value: Color3): ColorPicker;
     /**
      * Sets the transparency of the color picker.
      * If set, the color picker will have a transparency slider.
      */
-    setTransparency(transparency: number): ColorPicker;
+    transparency(transparency: number): ColorPicker;
     /**
      * Subscribes to the color picker's state
      */
-    onCallback(callback: (value: Color3) => void): ColorPicker;
+    onChanged(callback: (value: Color3) => void): ColorPicker;
 }
 /************************************************************
  * ELEMENTS
@@ -146,8 +146,8 @@ declare abstract class BaseExtensions extends Element {
  * Represents a label element.
  */
 export declare class Label extends BaseExtensions {
-    protected text: string;
-    protected doesWrap: boolean;
+    protected _text: string;
+    protected _doesWrap: boolean;
     /**
      * Builds the label element on the specified parent element.
      * @hidden
@@ -156,21 +156,21 @@ export declare class Label extends BaseExtensions {
     /**
      * Sets the text of the label.
      */
-    setText(text: string): Label;
+    text(text: string): Label;
     /**
      * Sets whether the label should wrap text.
      * Please note that if wrap is enabled, the label cannot have any extensions.
      */
-    setWrap(wrap: boolean): Label;
+    wrap(wrap: boolean): Label;
 }
 /**
  * Represents a toggle element.
  */
 export declare class Toggle extends BaseExtensions {
-    protected title: string;
-    protected tooltip: string;
-    protected default: boolean;
-    protected callback: (value: boolean) => void;
+    protected _title: string;
+    protected _tooltip: string;
+    protected _default: boolean;
+    protected _callback: (value: boolean) => void;
     /**
      * Builds the toggle element on the specified parent element.
      * @hidden
@@ -179,28 +179,28 @@ export declare class Toggle extends BaseExtensions {
     /**
      * Sets the title of the toggle.
      */
-    setTitle(name: string): Toggle;
+    title(title: string): Toggle;
     /**
      * Sets the tooltip of the toggle.
      */
-    setTooltip(tooltip: string): Toggle;
+    tooltip(tooltip: string): Toggle;
     /**
      * Sets the default value of the toggle.
      */
-    setValue(value: boolean): Toggle;
+    default(value: boolean): Toggle;
     /**
      * Subscribes to the toggle's state
      */
-    onCallback(callback: (value: boolean) => void): Toggle;
+    onChanged(callback: (value: boolean) => void): Toggle;
 }
 /**
  * Represents a button element.
  */
 export declare class Button extends Element {
-    protected title: string;
-    protected tooltip: string;
-    protected doubleClick: boolean;
-    protected func: () => void;
+    protected _title: string;
+    protected _tooltip: string;
+    protected _doubleClick: boolean;
+    protected _callback: () => void;
     /**
      * Builds the button element on the specified parent element.
      * @hidden
@@ -209,15 +209,15 @@ export declare class Button extends Element {
     /**
      * Sets the title of the button.
      */
-    setTitle(title: string): Button;
+    title(title: string): Button;
     /**
      * Sets the tooltip of the button.
      */
-    setTooltip(tooltip: string): Button;
+    tooltip(tooltip: string): Button;
     /**
      * Sets whether the button should trigger on double click.
      */
-    setDoubleClick(doubleClick: boolean): Button;
+    doubleClick(doubleClick: boolean): Button;
     /**
      * Subscribes to the button's click event
      */
@@ -227,14 +227,14 @@ export declare class Button extends Element {
  * Represents an input element.
  */
 export declare class Input extends Element {
-    protected title: string;
-    protected tooltip: string;
-    protected default: string;
-    protected placeholder: string;
-    protected numeric: boolean;
-    protected finished: boolean;
-    protected maxLength?: number;
-    protected callback: (value: string) => void;
+    protected _title: string;
+    protected _tooltip: string;
+    protected _default: string;
+    protected _placeholder: string;
+    protected _numeric: boolean;
+    protected _finished: boolean;
+    protected _maxLength?: number;
+    protected _callback: (value: string) => void;
     /**
      * Builds the input element on the specified parent element.
      * @hidden
@@ -243,49 +243,49 @@ export declare class Input extends Element {
     /**
      * Sets the title of the input.
      */
-    setTitle(title: string): Input;
+    title(title: string): Input;
     /**
      * Sets the tooltip of the input.
      */
-    setTooltip(tooltip: string): Input;
+    tooltip(tooltip: string): Input;
     /**
      * Sets the default value of the input.
      */
-    setValue(value: string): Input;
+    default(value: string): Input;
     /**
      * Sets the placeholder of the input.
      */
-    setPlaceholder(placeholder: string): Input;
+    placeholder(placeholder: string): Input;
     /**
      * Sets whether the input should only accept numeric values.
      */
-    setNumeric(numeric: boolean): Input;
+    numeric(numeric: boolean): Input;
     /**
      * Sets whether callback should only trigger when finished typing.
      */
-    setFinished(finished: boolean): Input;
+    finished(finished: boolean): Input;
     /**
      * Sets the maximum length of the input.
      */
-    setMaxLength(maxLength: number): Input;
+    maxLength(maxLength: number): Input;
     /**
      * Subscribes to the input's value
      */
-    onCallback(callback: (value: string) => void): Input;
+    onChanged(callback: (value: string) => void): Input;
 }
 /**
  * Represents a slider element.
  */
 export declare class Slider extends Element {
-    protected title: string;
-    protected default: number;
-    protected min: number;
-    protected max: number;
-    protected rounding: number;
-    protected suffix: string;
-    protected compact: boolean;
-    protected hideMax: boolean;
-    protected callback: (value: number) => void;
+    protected _title: string;
+    protected _default: number;
+    protected _min: number;
+    protected _max: number;
+    protected _rounding: number;
+    protected _suffix: string;
+    protected _compact: boolean;
+    protected _hideMax: boolean;
+    protected _callback: (value: number) => void;
     /**
      * Builds the slider element on the specified parent element.
      * @hidden
@@ -294,51 +294,47 @@ export declare class Slider extends Element {
     /**
      * Sets the title of the slider.
      */
-    setTitle(title: string): Slider;
+    title(title: string): Slider;
     /**
      * Sets the default value of the slider.
      */
-    setValue(value: number): Slider;
+    default(value: number): Slider;
     /**
-     * Sets the minimum value of the slider.
+     * Sets the value limits of the slider.
      */
-    setMin(min: number): Slider;
-    /**
-     * Sets the maximum value of the slider.
-     */
-    setMax(max: number): Slider;
+    limits(min: number, max: number): Slider;
     /**
      * Sets the number of decimal places to which the value is rounded.
      */
-    setRounding(rounding: number): Slider;
+    round(decimals: number): Slider;
     /**
      * Sets the suffix of the value.
      */
-    setSuffix(suffix: string): Slider;
+    suffix(suffix: string): Slider;
     /**
      * Sets whether the slider should be compact.
      */
-    setCompact(compact: boolean): Slider;
+    compact(compact: boolean): Slider;
     /**
      * Sets whether the maximum value should be hidden.
      */
-    setHideMax(hideMax: boolean): Slider;
+    hideMax(hideMax: boolean): Slider;
     /**
      * Subscribes to the slider's value
      */
-    onCallback(callback: (value: number) => void): Slider;
+    onChanged(callback: (value: number) => void): Slider;
 }
 /**
  * Represents a dropdown element.
  */
 export declare class Dropdown<V extends string> extends Element {
-    protected title: string;
-    protected tooltip: string;
-    protected values: V[];
-    protected default: number | V;
-    protected allowNull: boolean;
-    protected specialType?: SpecialType;
-    protected callback: (value: V) => void;
+    protected _title: string;
+    protected _tooltip: string;
+    protected _values: V[];
+    protected _default: number | V;
+    protected _allowNull: boolean;
+    protected _specialType?: SpecialType;
+    protected _callback: (value: V) => void;
     /**
      * Builds the dropdown element on the specified parent element.
      * @hidden
@@ -347,40 +343,43 @@ export declare class Dropdown<V extends string> extends Element {
     /**
      * Sets the title of the dropdown.
      */
-    setTitle(title: string): Dropdown<V>;
+    title(title: string): Dropdown<V>;
     /**
      * Sets the tooltip of the dropdown.
      */
-    setTooltip(tooltip: string): Dropdown<V>;
+    tooltip(tooltip: string): Dropdown<V>;
     /**
      * Sets the options of the dropdown.
      */
-    setOptions(options: V[]): Dropdown<V>;
+    options(options: V[]): Dropdown<V>;
     /**
      * Sets the default value of the dropdown.
      */
-    setValue(value: number | V): Dropdown<V>;
+    default(value: number | V): Dropdown<V>;
     /**
      * Sets whether the dropdown should allow null values.
      */
-    setAllowNull(allowNull: boolean): Dropdown<V>;
+    canNull(allowNull: boolean): Dropdown<V>;
     /**
      * Sets the special type of the dropdown.
      */
-    setSpecialType(specialType: SpecialType): Dropdown<V>;
+    specialType(specialType: SpecialType): Dropdown<V>;
     /**
      * Subscribes to the dropdown's value
      */
-    onCallback(callback: (value: V) => void): Dropdown<V>;
+    onChange(callback: (value: V) => void): Dropdown<V>;
 }
+/**
+ * Represents a multi dropdown element.
+ */
 export declare class MultiDropdown<V extends string> extends Element {
-    protected title: string;
-    protected tooltip: string;
-    protected values: V[];
-    protected default: V[];
-    protected allowNull: boolean;
-    protected specialType?: SpecialType;
-    protected callback: (value: Set<V>) => void;
+    protected _title: string;
+    protected _tooltip: string;
+    protected _values: V[];
+    protected _default: V[];
+    protected _allowNull: boolean;
+    protected _specialType?: SpecialType;
+    protected _callback: (value: Set<V>) => void;
     /**
      * Builds the multi dropdown element on the specified parent element.
      * @hidden
@@ -389,31 +388,31 @@ export declare class MultiDropdown<V extends string> extends Element {
     /**
      * Sets the title of the multi dropdown.
      */
-    setTitle(title: string): MultiDropdown<V>;
+    title(title: string): MultiDropdown<V>;
     /**
      * Sets the tooltip of the multi dropdown.
      */
-    setTooltip(tooltip: string): MultiDropdown<V>;
+    tooltip(tooltip: string): MultiDropdown<V>;
     /**
      * Sets the options of the multi dropdown.
      */
-    setOptions(options: V[]): MultiDropdown<V>;
+    options(options: V[]): MultiDropdown<V>;
     /**
      * Sets the default value of the multi dropdown.
      */
-    setValue(value: V[]): MultiDropdown<V>;
+    default(value: V[]): MultiDropdown<V>;
     /**
      * Sets whether the multi dropdown should allow null values.
      */
-    setAllowNull(allowNull: boolean): MultiDropdown<V>;
+    canNull(enabled: boolean): MultiDropdown<V>;
     /**
      * Sets the special type of the multi dropdown.
      */
-    setSpecialType(specialType: SpecialType): MultiDropdown<V>;
+    specialType(specialType: SpecialType): MultiDropdown<V>;
     /**
      * Subscribes to the multi dropdown's value
      */
-    onCallback(callback: (value: Set<V>) => void): MultiDropdown<V>;
+    onChange(callback: (value: Set<V>) => void): MultiDropdown<V>;
 }
 /************************************************************
  * SECTIONS
@@ -444,7 +443,7 @@ export declare class DependencyBox extends Box {
      * Sets the dependency of the dependency box.
      * The box will only be visible if the specified Toggle is in the specified state.
      */
-    setDependency(idx: string, state: boolean): this;
+    dependsOn(idx: string, state: boolean): this;
 }
 /**
  * Represents a tab section.
@@ -459,7 +458,7 @@ export declare class Tab extends Box {
     /**
      * Sets the name of the tab.
      */
-    setName(name: string): this;
+    title(title: string): this;
 }
 /**
  * Represents a groupbox section.
@@ -475,7 +474,7 @@ export declare class Groupbox extends Box {
     /**
      * Sets the name of the groupbox.
      */
-    setName(name: string): Groupbox;
+    title(title: string): Groupbox;
 }
 /**
  * Represents a tabbox section.
@@ -519,7 +518,7 @@ export declare class Page {
     /**
      * Sets the name of the page.
      */
-    setName(name: string): Page;
+    title(title: string): Page;
 }
 /**
  * Represents a window.
@@ -539,19 +538,19 @@ export declare class Window {
     /**
      * Sets the title of the window.
      */
-    setTitle(title: string): Window;
+    title(title: string): Window;
     /**
      * Sets whether the window is centered on the screen.
      */
-    setCenter(center: boolean): Window;
+    centered(center: boolean): Window;
     /**
      * Sets visibility of the window when created.
      */
-    setAutoShow(autoShow: boolean): Window;
+    autoShow(autoShow: boolean): Window;
     /**
      * Sets the time it takes for the window to fade in and out.
      */
-    setMenuFadeTime(menuFadeTime: number): Window;
+    withFadeTime(menuFadeTime: number): Window;
 }
 /************************************************************
  * BUILDER

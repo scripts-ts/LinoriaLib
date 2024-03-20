@@ -60,52 +60,52 @@ do
 	end
 	function KeyPicker:constructor(...)
 		super.constructor(self, ...)
-		self.default = "Delete"
-		self.syncToggleState = false
-		self.mode = "Toggle"
-		self.title = ""
-		self.noUI = false
-		self.callback = function() end
-		self.changedCallback = function() end
+		self._title = ""
+		self._noUI = false
+		self._mode = "Toggle"
+		self._default = "Delete"
+		self._syncToggle = false
+		self._callback = function() end
+		self._changedCallback = function() end
 	end
 	function KeyPicker:build(parent)
 		parent:AddKeyPicker(self.idx, {
-			Default = self.default,
-			SyncToggleState = self.syncToggleState,
-			Mode = self.mode,
-			Text = self.title,
-			NoUI = self.noUI,
-			Callback = self.callback,
-			ChangedCallback = self.changedCallback,
+			Default = self._default,
+			SyncToggleState = self._syncToggle,
+			Mode = self._mode,
+			Text = self._title,
+			NoUI = self._noUI,
+			Callback = self._callback,
+			ChangedCallback = self._changedCallback,
 		})
 		return self
 	end
-	function KeyPicker:setBind(value)
-		self.default = value
+	function KeyPicker:title(title)
+		self._title = title
 		return self
 	end
-	function KeyPicker:setSyncToggleState(syncToggleState)
-		self.syncToggleState = syncToggleState
+	function KeyPicker:hidden(hide)
+		self._noUI = hide
 		return self
 	end
-	function KeyPicker:setMode(mode)
-		self.mode = mode
+	function KeyPicker:bind(value)
+		self._default = value
 		return self
 	end
-	function KeyPicker:setTitle(title)
-		self.title = title
+	function KeyPicker:mode(mode)
+		self._mode = mode
 		return self
 	end
-	function KeyPicker:setNoUI(noUI)
-		self.noUI = noUI
+	function KeyPicker:sync(enabled)
+		self._syncToggle = enabled
 		return self
 	end
-	function KeyPicker:onCallback(callback)
-		self.callback = callback
+	function KeyPicker:onClick(callback)
+		self._callback = callback
 		return self
 	end
-	function KeyPicker:onKeybind(callback)
-		self.changedCallback = callback
+	function KeyPicker:onChanged(callback)
+		self._changedCallback = callback
 		return self
 	end
 end
@@ -130,33 +130,33 @@ do
 	end
 	function ColorPicker:constructor(...)
 		super.constructor(self, ...)
-		self.default = Color3.new(1, 1, 1)
-		self.title = ""
-		self.callback = function() end
+		self._title = ""
+		self._default = Color3.new(1, 1, 1)
+		self._callback = function() end
 	end
 	function ColorPicker:build(parent)
 		parent:AddColorPicker(self.idx, {
-			Default = self.default,
-			Title = self.title,
-			Transparency = self.transparency,
-			Callback = self.callback,
+			Default = self._default,
+			Title = self._title,
+			Transparency = self._transparency,
+			Callback = self._callback,
 		})
 		return self
 	end
-	function ColorPicker:setValue(value)
-		self.default = value
+	function ColorPicker:title(title)
+		self._title = title
 		return self
 	end
-	function ColorPicker:setTitle(title)
-		self.title = title
+	function ColorPicker:default(value)
+		self._default = value
 		return self
 	end
-	function ColorPicker:setTransparency(transparency)
-		self.transparency = transparency
+	function ColorPicker:transparency(transparency)
+		self._transparency = transparency
 		return self
 	end
-	function ColorPicker:onCallback(callback)
-		self.callback = callback
+	function ColorPicker:onChanged(callback)
+		self._callback = callback
 		return self
 	end
 end
@@ -230,22 +230,22 @@ do
 	end
 	function Label:constructor(...)
 		super.constructor(self, ...)
-		self.text = ""
-		self.doesWrap = false
+		self._text = ""
+		self._doesWrap = false
 	end
 	function Label:build(builder, parent)
-		local label = parent:AddLabel(self.text, self.doesWrap)
+		local label = parent:AddLabel(self._text, self._doesWrap)
 		for _, addon in self.addons do
 			addon:build(label)
 		end
 		return self
 	end
-	function Label:setText(text)
-		self.text = text
+	function Label:text(text)
+		self._text = text
 		return self
 	end
-	function Label:setWrap(wrap)
-		self.doesWrap = wrap
+	function Label:wrap(wrap)
+		self._doesWrap = wrap
 		return self
 	end
 end
@@ -270,37 +270,37 @@ do
 	end
 	function Toggle:constructor(...)
 		super.constructor(self, ...)
-		self.title = ""
-		self.tooltip = ""
-		self.default = false
-		self.callback = function() end
+		self._title = ""
+		self._tooltip = ""
+		self._default = false
+		self._callback = function() end
 	end
 	function Toggle:build(builder, parent)
 		local toggle = parent:AddToggle(self.idx, {
-			Text = self.title,
-			Default = self.default,
-			Tooltip = self.tooltip,
-			Callback = self.callback,
+			Text = self._title,
+			Default = self._default,
+			Tooltip = self._tooltip,
+			Callback = self._callback,
 		})
 		for _, addon in self.addons do
 			addon:build(toggle)
 		end
 		return self
 	end
-	function Toggle:setTitle(name)
-		self.title = name
+	function Toggle:title(title)
+		self._title = title
 		return self
 	end
-	function Toggle:setTooltip(tooltip)
-		self.tooltip = tooltip
+	function Toggle:tooltip(tooltip)
+		self._tooltip = tooltip
 		return self
 	end
-	function Toggle:setValue(value)
-		self.default = value
+	function Toggle:default(value)
+		self._default = value
 		return self
 	end
-	function Toggle:onCallback(callback)
-		self.callback = callback
+	function Toggle:onChanged(callback)
+		self._callback = callback
 		return self
 	end
 end
@@ -325,34 +325,34 @@ do
 	end
 	function Button:constructor(...)
 		super.constructor(self, ...)
-		self.title = ""
-		self.tooltip = ""
-		self.doubleClick = false
-		self.func = function() end
+		self._title = ""
+		self._tooltip = ""
+		self._doubleClick = false
+		self._callback = function() end
 	end
 	function Button:build(builder, parent)
 		parent:AddButton({
-			Text = self.title,
-			Func = self.func,
-			DoubleClick = self.doubleClick,
-			Tooltip = self.tooltip,
+			Text = self._title,
+			Func = self._callback,
+			DoubleClick = self._doubleClick,
+			Tooltip = self._tooltip,
 		})
 		return self
 	end
-	function Button:setTitle(title)
-		self.title = title
+	function Button:title(title)
+		self._title = title
 		return self
 	end
-	function Button:setTooltip(tooltip)
-		self.tooltip = tooltip
+	function Button:tooltip(tooltip)
+		self._tooltip = tooltip
 		return self
 	end
-	function Button:setDoubleClick(doubleClick)
-		self.doubleClick = doubleClick
+	function Button:doubleClick(doubleClick)
+		self._doubleClick = doubleClick
 		return self
 	end
 	function Button:onClick(func)
-		self.func = func
+		self._callback = func
 		return self
 	end
 end
@@ -377,57 +377,57 @@ do
 	end
 	function Input:constructor(...)
 		super.constructor(self, ...)
-		self.title = ""
-		self.tooltip = ""
-		self.default = ""
-		self.placeholder = ""
-		self.numeric = false
-		self.finished = false
-		self.callback = function() end
+		self._title = ""
+		self._tooltip = ""
+		self._default = ""
+		self._placeholder = ""
+		self._numeric = false
+		self._finished = false
+		self._callback = function() end
 	end
 	function Input:build(builder, parent)
 		parent:AddInput(self.idx, {
-			Default = self.default,
-			Numeric = self.numeric,
-			Finished = self.finished,
-			Text = self.title,
-			Tooltip = self.tooltip,
-			Placeholder = self.placeholder,
-			MaxLength = self.maxLength,
-			Callback = self.callback,
+			Default = self._default,
+			Numeric = self._numeric,
+			Finished = self._finished,
+			Text = self._title,
+			Tooltip = self._tooltip,
+			Placeholder = self._placeholder,
+			MaxLength = self._maxLength,
+			Callback = self._callback,
 		})
 		return self
 	end
-	function Input:setTitle(title)
-		self.title = title
+	function Input:title(title)
+		self._title = title
 		return self
 	end
-	function Input:setTooltip(tooltip)
-		self.tooltip = tooltip
+	function Input:tooltip(tooltip)
+		self._tooltip = tooltip
 		return self
 	end
-	function Input:setValue(value)
-		self.default = value
+	function Input:default(value)
+		self._default = value
 		return self
 	end
-	function Input:setPlaceholder(placeholder)
-		self.placeholder = placeholder
+	function Input:placeholder(placeholder)
+		self._placeholder = placeholder
 		return self
 	end
-	function Input:setNumeric(numeric)
-		self.numeric = numeric
+	function Input:numeric(numeric)
+		self._numeric = numeric
 		return self
 	end
-	function Input:setFinished(finished)
-		self.finished = finished
+	function Input:finished(finished)
+		self._finished = finished
 		return self
 	end
-	function Input:setMaxLength(maxLength)
-		self.maxLength = maxLength
+	function Input:maxLength(maxLength)
+		self._maxLength = maxLength
 		return self
 	end
-	function Input:onCallback(callback)
-		self.callback = callback
+	function Input:onChanged(callback)
+		self._callback = callback
 		return self
 	end
 end
@@ -452,64 +452,61 @@ do
 	end
 	function Slider:constructor(...)
 		super.constructor(self, ...)
-		self.title = ""
-		self.default = 0
-		self.min = 0
-		self.max = 1
-		self.rounding = 2
-		self.suffix = ""
-		self.compact = false
-		self.hideMax = false
-		self.callback = function() end
+		self._title = ""
+		self._default = 0
+		self._min = 0
+		self._max = 1
+		self._rounding = 2
+		self._suffix = ""
+		self._compact = false
+		self._hideMax = false
+		self._callback = function() end
 	end
 	function Slider:build(builder, parent)
 		parent:AddSlider(self.idx, {
-			Text = self.title,
-			Default = self.default,
-			Min = self.min,
-			Max = self.max,
-			Rounding = self.rounding,
-			Suffix = self.suffix,
-			Compact = self.compact,
-			HideMax = self.hideMax,
-			Callback = self.callback,
+			Text = self._title,
+			Default = self._default,
+			Min = self._min,
+			Max = self._max,
+			Rounding = self._rounding,
+			Suffix = self._suffix,
+			Compact = self._compact,
+			HideMax = self._hideMax,
+			Callback = self._callback,
 		})
 		return self
 	end
-	function Slider:setTitle(title)
-		self.title = title
+	function Slider:title(title)
+		self._title = title
 		return self
 	end
-	function Slider:setValue(value)
-		self.default = value
+	function Slider:default(value)
+		self._default = value
 		return self
 	end
-	function Slider:setMin(min)
-		self.min = min
+	function Slider:limits(min, max)
+		self._min = min
+		self._max = max
 		return self
 	end
-	function Slider:setMax(max)
-		self.max = max
+	function Slider:round(decimals)
+		self._rounding = decimals
 		return self
 	end
-	function Slider:setRounding(rounding)
-		self.rounding = rounding
+	function Slider:suffix(suffix)
+		self._suffix = suffix
 		return self
 	end
-	function Slider:setSuffix(suffix)
-		self.suffix = suffix
+	function Slider:compact(compact)
+		self._compact = compact
 		return self
 	end
-	function Slider:setCompact(compact)
-		self.compact = compact
+	function Slider:hideMax(hideMax)
+		self._hideMax = hideMax
 		return self
 	end
-	function Slider:setHideMax(hideMax)
-		self.hideMax = hideMax
-		return self
-	end
-	function Slider:onCallback(callback)
-		self.callback = callback
+	function Slider:onChanged(callback)
+		self._callback = callback
 		return self
 	end
 end
@@ -534,55 +531,60 @@ do
 	end
 	function Dropdown:constructor(...)
 		super.constructor(self, ...)
-		self.title = ""
-		self.tooltip = ""
-		self.values = {}
-		self.default = 1
-		self.allowNull = false
-		self.callback = function() end
+		self._title = ""
+		self._tooltip = ""
+		self._values = {}
+		self._default = 1
+		self._allowNull = false
+		self._callback = function() end
 	end
 	function Dropdown:build(builder, parent)
 		parent:AddDropdown(self.idx, {
-			Text = self.title,
-			Tooltip = self.tooltip,
-			Values = self.values,
-			Default = self.default,
+			Text = self._title,
+			Tooltip = self._tooltip,
+			Values = self._values,
+			Default = self._default,
 			Multi = false,
-			AllowNull = self.allowNull,
-			SpecialType = self.specialType,
-			Callback = self.callback,
+			AllowNull = self._allowNull,
+			SpecialType = self._specialType,
+			Callback = self._callback,
 		})
 		return self
 	end
-	function Dropdown:setTitle(title)
-		self.title = title
+	function Dropdown:title(title)
+		self._title = title
 		return self
 	end
-	function Dropdown:setTooltip(tooltip)
-		self.tooltip = tooltip
+	function Dropdown:tooltip(tooltip)
+		self._tooltip = tooltip
 		return self
 	end
-	function Dropdown:setOptions(options)
-		self.values = options
+	function Dropdown:options(options)
+		self._values = options
 		return self
 	end
-	function Dropdown:setValue(value)
-		self.default = value
+	function Dropdown:default(value)
+		self._default = value
 		return self
 	end
-	function Dropdown:setAllowNull(allowNull)
-		self.allowNull = allowNull
+	function Dropdown:canNull(allowNull)
+		self._allowNull = allowNull
 		return self
 	end
-	function Dropdown:setSpecialType(specialType)
-		self.specialType = specialType
+	function Dropdown:specialType(specialType)
+		self._specialType = specialType
 		return self
 	end
-	function Dropdown:onCallback(callback)
-		self.callback = callback
+	function Dropdown:onChange(callback)
+		self._callback = callback
 		return self
 	end
 end
+--[[
+	*
+	 * Represents a multi dropdown element.
+	 
+]]
 local MultiDropdown
 do
 	local super = Element
@@ -599,66 +601,66 @@ do
 	end
 	function MultiDropdown:constructor(...)
 		super.constructor(self, ...)
-		self.title = ""
-		self.tooltip = ""
-		self.values = {}
-		self.default = {}
-		self.allowNull = false
-		self.callback = function() end
+		self._title = ""
+		self._tooltip = ""
+		self._values = {}
+		self._default = {}
+		self._allowNull = false
+		self._callback = function() end
 	end
 	function MultiDropdown:build(builder, parent)
 		local _fn = parent
 		local _exp = self.idx
 		local _object = {
-			Text = self.title,
-			Tooltip = self.tooltip,
-			Values = self.values,
+			Text = self._title,
+			Tooltip = self._tooltip,
+			Values = self._values,
 		}
 		local _left = "Default"
-		local _condition = self.default[1]
+		local _condition = self._default[1]
 		if _condition == nil then
-			_condition = self.values[1]
+			_condition = self._values[1]
 		end
 		_object[_left] = _condition
 		_object.Multi = true
-		_object.AllowNull = self.allowNull
-		_object.SpecialType = self.specialType
-		_object.Callback = self.callback
+		_object.AllowNull = self._allowNull
+		_object.SpecialType = self._specialType
+		_object.Callback = self._callback
 		local dropdown = _fn:AddDropdown(_exp, _object)
 		local _fn_1 = dropdown
 		local _set = {}
-		for _, _v in self.default do
+		for _, _v in self._default do
 			_set[_v] = true
 		end
 		_fn_1:SetValue(_set)
 		return self
 	end
-	function MultiDropdown:setTitle(title)
-		self.title = title
+	function MultiDropdown:title(title)
+		self._title = title
 		return self
 	end
-	function MultiDropdown:setTooltip(tooltip)
-		self.tooltip = tooltip
+	function MultiDropdown:tooltip(tooltip)
+		self._tooltip = tooltip
 		return self
 	end
-	function MultiDropdown:setOptions(options)
-		self.values = options
+	function MultiDropdown:options(options)
+		self._values = options
 		return self
 	end
-	function MultiDropdown:setValue(value)
-		self.default = value
+	function MultiDropdown:default(value)
+		self._default = value
 		return self
 	end
-	function MultiDropdown:setAllowNull(allowNull)
-		self.allowNull = allowNull
+	function MultiDropdown:canNull(enabled)
+		self._allowNull = enabled
 		return self
 	end
-	function MultiDropdown:setSpecialType(specialType)
-		self.specialType = specialType
+	function MultiDropdown:specialType(specialType)
+		self._specialType = specialType
 		return self
 	end
-	function MultiDropdown:onCallback(callback)
-		self.callback = callback
+	function MultiDropdown:onChange(callback)
+		self._callback = callback
 		return self
 	end
 end
@@ -723,7 +725,7 @@ do
 		end
 		return self
 	end
-	function DependencyBox:setDependency(idx, state)
+	function DependencyBox:dependsOn(idx, state)
 		self.dependent = idx
 		self.state = state
 		return self
@@ -759,8 +761,8 @@ do
 		end
 		return self
 	end
-	function Tab:setName(name)
-		self.name = name
+	function Tab:title(title)
+		self.name = title
 		return self
 	end
 end
@@ -796,8 +798,8 @@ do
 		end
 		return self
 	end
-	function Groupbox:setName(name)
-		self.name = name
+	function Groupbox:title(title)
+		self.name = title
 		return self
 	end
 end
@@ -886,8 +888,8 @@ do
 		end
 		return self
 	end
-	function Page:setName(name)
-		self.name = name
+	function Page:title(title)
+		self.name = title
 		return self
 	end
 end
@@ -926,19 +928,19 @@ do
 		end
 		return self
 	end
-	function Window:setTitle(title)
+	function Window:title(title)
 		self.configs.Title = title
 		return self
 	end
-	function Window:setCenter(center)
+	function Window:centered(center)
 		self.configs.Center = center
 		return self
 	end
-	function Window:setAutoShow(autoShow)
+	function Window:autoShow(autoShow)
 		self.configs.AutoShow = autoShow
 		return self
 	end
-	function Window:setMenuFadeTime(menuFadeTime)
+	function Window:withFadeTime(menuFadeTime)
 		self.configs.MenuFadeTime = menuFadeTime
 		return self
 	end
