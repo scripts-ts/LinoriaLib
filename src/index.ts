@@ -10,14 +10,6 @@ export enum Side {
 	Right,
 }
 
-export function load() {
-	const repo = "https://raw.githubusercontent.com/scripts-ts/LinoriaLib/main/out/";
-	const library = loadstring(game.HttpGet(repo + "library.lua"))() as Library;
-	const saveManager = loadstring(game.HttpGet(repo + "addons/savemanager.lua"))() as SaveManager;
-	const themeManager = loadstring(game.HttpGet(repo + "addons/thememanager.lua"))() as ThemeManager;
-	return $tuple(library, saveManager, themeManager);
-}
-
 /************************************************************
  * EXTENSIONS
  * Description: Builder classes for element extensions

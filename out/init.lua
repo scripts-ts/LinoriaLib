@@ -10,13 +10,6 @@ do
 	Side.Right = 1
 	_inverse[1] = "Right"
 end
-local function load()
-	local repo = "https://raw.githubusercontent.com/scripts-ts/LinoriaLib/main/out/"
-	local library = loadstring(game:HttpGet(repo .. "library.lua"))()
-	local saveManager = loadstring(game:HttpGet(repo .. "addons/savemanager.lua"))()
-	local themeManager = loadstring(game:HttpGet(repo .. "addons/thememanager.lua"))()
-	return library, saveManager, themeManager
-end
 --[[
 	***********************************************************
 	 * EXTENSIONS
@@ -1003,7 +996,6 @@ do
 	end
 end
 return {
-	load = load,
 	Side = Side,
 	KeyPicker = KeyPicker,
 	ColorPicker = ColorPicker,
