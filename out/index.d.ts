@@ -30,7 +30,7 @@ declare abstract class Extension {
      * Sets the index of the extension.
      * The extension can be referenced by this index using `Options[idx]`.
      */
-    setIndex(idx: string): this;
+    index(idx: string): this;
 }
 /**
  * Represents a key picker extension.
@@ -130,7 +130,7 @@ declare abstract class Element {
      * Sets the index of the element.
      * The element can be referenced by this index using `Toggles[idx]` or `Options[idx]`.
      */
-    setIndex(idx: string): this;
+    index(idx: string): this;
 }
 /**
  * Abstract base class for elements with extensions.

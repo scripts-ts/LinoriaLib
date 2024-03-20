@@ -34,7 +34,7 @@ do
 	function Extension:constructor()
 		self.idx = ""
 	end
-	function Extension:setIndex(idx)
+	function Extension:index(idx)
 		self.idx = idx
 		return self
 	end
@@ -177,7 +177,7 @@ do
 	function Element:constructor()
 		self.idx = ""
 	end
-	function Element:setIndex(idx)
+	function Element:index(idx)
 		self.idx = idx
 		return self
 	end
