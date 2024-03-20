@@ -758,7 +758,7 @@ export class MultiDropdown<V extends string> extends Element {
  * Abstract base class for sections.
  */
 abstract class Box {
-	protected children: Element[] = [];
+	protected children: (Element | DependencyBox)[] = [];
 
 	/**
 	 * Adds elements to the section.
