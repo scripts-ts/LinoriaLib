@@ -889,6 +889,7 @@ export class Page {
 	public build(builder: Builder, parent: Elements.Window): Page {
 		const tab = parent.AddTab(this.name);
 		for (const child of this.left_children) child.build(builder, tab, Side.Left);
+		for (const child of this.right_children) child.build(builder, tab, Side.Right);
 		return this;
 	}
 

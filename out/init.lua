@@ -878,6 +878,9 @@ do
 		for _, child in self.left_children do
 			child:build(builder, tab, Side.Left)
 		end
+		for _, child in self.right_children do
+			child:build(builder, tab, Side.Right)
+		end
 		return self
 	end
 	function Page:left(left)
