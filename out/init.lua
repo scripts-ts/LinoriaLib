@@ -24,8 +24,12 @@ end
 local Extension
 do
 	Extension = {}
-	function Extension:constructor()
-		self.idx = ""
+	function Extension:constructor(index)
+		local _condition = index
+		if _condition == nil then
+			_condition = ""
+		end
+		self.idx = _condition
 	end
 	function Extension:index(idx)
 		self.idx = idx
@@ -167,8 +171,12 @@ end
 local Element
 do
 	Element = {}
-	function Element:constructor()
-		self.idx = ""
+	function Element:constructor(index)
+		local _condition = index
+		if _condition == nil then
+			_condition = ""
+		end
+		self.idx = _condition
 	end
 	function Element:index(idx)
 		self.idx = idx
@@ -668,6 +676,31 @@ do
 	end
 end
 --[[
+	*
+	 * Represents a spacer element.
+	 
+]]
+local Spacer
+do
+	Spacer = setmetatable({}, {
+		__tostring = function()
+			return "Spacer"
+		end,
+	})
+	Spacer.__index = Spacer
+	function Spacer.new(...)
+		local self = setmetatable({}, Spacer)
+		return self:constructor(...) or self
+	end
+	function Spacer:constructor(size)
+		self._size = size
+	end
+	function Spacer:build(builder, parent)
+		parent:AddBlank(self._size)
+		return self
+	end
+end
+--[[
 	***********************************************************
 	 * SECTIONS
 	 * Description: Builder classes that hold elements
@@ -1149,6 +1182,7 @@ return {
 	Dropdown = Dropdown,
 	MultiDropdown = MultiDropdown,
 	Divider = Divider,
+	Spacer = Spacer,
 	DependencyBox = DependencyBox,
 	Tab = Tab,
 	Groupbox = Groupbox,

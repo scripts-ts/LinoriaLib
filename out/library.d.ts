@@ -18,12 +18,13 @@ export namespace Elements {
 	}
 
 	interface Box {
+		AddBlank(size: number): void;
+		AddDivider(): void;
+		AddLabel(text: string, doesWrap?: boolean): Label;
 		AddToggle(idx: string, options: UIConfig.Toggle): Toggle;
 		AddButton(options: UIConfig.Button): Button;
-		AddLabel(text: string, doesWrap?: boolean): Label;
-		AddDivider(): void;
-		AddSlider(idx: string, options: UIConfig.Slider): Slider;
 		AddInput(idx: string, options: UIConfig.Input): Input;
+		AddSlider(idx: string, options: UIConfig.Slider): Slider;
 		AddDropdown<V extends string, M extends boolean = false>(
 			idx: string,
 			options: UIConfig.Dropdown<V, M>,

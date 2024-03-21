@@ -18,7 +18,11 @@ export enum Side {
  * Abstract base class for element extensions.
  */
 abstract class Extension {
-	protected idx: string = "";
+	protected idx: string;
+
+	constructor(index?: string) {
+		this.idx = index ?? "";
+	}
 
 	/**
 	 * Builds the extension on the specified parent element.
@@ -191,7 +195,11 @@ export class ColorPicker extends Extension {
  * Abstract base class for elements.
  */
 abstract class Element {
-	protected idx: string = "";
+	protected idx: string;
+
+	constructor(index?: string) {
+		this.idx = index ?? "";
+	}
 
 	/**
 	 * Builds the element on the specified parent element.
@@ -759,6 +767,26 @@ export class Divider {
 	}
 }
 
+/**
+ * Represents a spacer element.
+ */
+export class Spacer {
+	protected _size: number;
+
+	constructor(size: number) {
+		this._size = size;
+	}
+
+	/**
+	 * Builds the Blank on the specified parent element.
+	 * @hidden
+	 */
+	public build(builder: Builder, parent: Elements.Box): Spacer {
+		parent.AddBlank(this._size);
+		return this;
+	}
+}
+
 /************************************************************
  * SECTIONS
  * Description: Builder classes that hold elements
@@ -767,12 +795,12 @@ export class Divider {
  * Abstract base class for sections.
  */
 abstract class Box {
-	protected children: (Label | Divider | Element | DependencyBox)[] = [];
+	protected children: (Divider | Spacer | Label | Element | DependencyBox)[] = [];
 
 	/**
 	 * Adds elements to the section.
 	 */
-	public elements(elements: (Element | Divider | DependencyBox)[]) {
+	public elements(elements: (Divider | Spacer | Label | Element | DependencyBox)[]) {
 		for (const element of elements) this.children.push(element);
 		return this;
 	}
