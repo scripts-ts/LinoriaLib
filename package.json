@@ -1,6 +1,6 @@
 {
   "name": "@script-ts/linorialib",
-  "version": "1.5.1",
+  "version": "1.5.3",
   "description": "",
   "main": "out/init.lua",
   "scripts": {

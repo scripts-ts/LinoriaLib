@@ -83,11 +83,12 @@ local function GetTeamsString()
     local TeamList = Teams:GetTeams();
 
     for i = 1, #TeamList do
-        TeamList[i] = TeamList[i].Name;
+        local team = TeamList[i];
+        TeamList[i] = team.Name .. " (" .. team.TeamColor.Name .. ")";
     end;
 
     table.sort(TeamList, function(str1, str2) return str1 < str2 end);
-    
+
     return TeamList;
 end;
 
@@ -3630,6 +3631,9 @@ local function OnPlayerChange()
     end;
 end;
 
+Players.PlayerAdded:Connect(OnPlayerChange);
+Players.PlayerRemoving:Connect(OnPlayerChange);
+
 local function OnTeamChange()
     local TeamList = GetTeamsString();
 
@@ -3638,12 +3642,14 @@ local function OnTeamChange()
             Value:SetValues(TeamList);
         end;
     end;
-end
+end;
 
-Players.PlayerAdded:Connect(OnPlayerChange);
-Players.PlayerRemoving:Connect(OnPlayerChange);
-
-Teams.ChildAdded:Connect(OnTeamChange);
+Teams.ChildAdded:Connect(function(child)
+    if child:IsA('Team') then
+        OnTeamChange();
+        child.Changed:Connect(OnTeamChange);
+    end;
+end);
 Teams.ChildRemoved:Connect(OnTeamChange);
 
 getgenv().Library = Library
