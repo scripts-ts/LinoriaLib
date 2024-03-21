@@ -70,7 +70,8 @@ local function GetPlayersString()
     local PlayerList = Players:GetPlayers();
 
     for i = 1, #PlayerList do
-        PlayerList[i] = PlayerList[i].Name;
+        local player = PlayerList[i];
+        PlayerList[i] = player.DisplayName .. " @" .. player.Name;
     end;
 
     table.sort(PlayerList, function(str1, str2) return str1 < str2 end);
@@ -3629,8 +3630,21 @@ local function OnPlayerChange()
     end;
 end;
 
+local function OnTeamChange()
+    local TeamList = GetTeamsString();
+
+    for _, Value in next, Options do
+        if Value.Type == 'Dropdown' and Value.SpecialType == 'Team' then
+            Value:SetValues(TeamList);
+        end;
+    end;
+end
+
 Players.PlayerAdded:Connect(OnPlayerChange);
 Players.PlayerRemoving:Connect(OnPlayerChange);
+
+Teams.ChildAdded:Connect(OnTeamChange);
+Teams.ChildRemoved:Connect(OnTeamChange);
 
 getgenv().Library = Library
 return Library
